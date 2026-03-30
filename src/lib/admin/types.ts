@@ -56,3 +56,10 @@ export type AdminEntityMap = {
 };
 
 export type CollectionSection = Exclude<AdminSection, 'profile'>;
+
+export type CollectionItemMap = {
+  experience: ExperienceFormData;
+  education: EducationFormData;
+  skill: SkillFormData;
+  project: ProjectFormData;
+};

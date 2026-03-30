@@ -1,6 +1,12 @@
 'use client';
 
-import type { AdminEntityMap, AdminSection, CollectionSection } from '@/lib/admin/types';
+import type {
+  AdminEntityMap,
+  AdminSection,
+  CollectionItemMap,
+  CollectionSection,
+  ProfileFormData,
+} from '@/lib/admin/types';
 
 function redirectToLogin() {
   window.location.href = '/admin/login';
@@ -21,9 +27,14 @@ export async function fetchSectionData<T extends AdminSection>(section: T): Prom
   return response.json() as Promise<AdminEntityMap[T]>;
 }
 
-export async function saveSectionItem<T extends AdminSection>(
+export async function saveSectionItem(section: 'profile', payload: ProfileFormData): Promise<void>;
+export async function saveSectionItem<T extends CollectionSection>(
   section: T,
-  payload: T extends 'profile' ? AdminEntityMap[T] : AdminEntityMap[T][number]
+  payload: CollectionItemMap[T]
+): Promise<void>;
+export async function saveSectionItem(
+  section: AdminSection,
+  payload: ProfileFormData | CollectionItemMap[CollectionSection]
 ): Promise<void> {
   const isProfile = section === 'profile';
   const record = payload as { _id?: string };
