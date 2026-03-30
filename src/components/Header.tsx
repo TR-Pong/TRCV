@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { HiMenu, HiX } from 'react-icons/hi';
+import PageLoader from '@/components/PageLoader';
 
 interface HeaderProps {
   lang: 'en' | 'th';
@@ -13,9 +14,12 @@ interface HeaderProps {
 export default function Header({ lang }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [loadingTarget, setLoadingTarget] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const currentRouteKey = `${pathname}?${searchParams.toString()}`;
+  const isLanguageLoading = loadingTarget !== null && loadingTarget !== currentRouteKey;
 
   const navLinks = [
     { name: lang === 'th' ? 'หน้าหลัก' : 'Home', href: '#home' },
@@ -48,9 +52,14 @@ export default function Header({ lang }: HeaderProps) {
   }, [isMobileMenuOpen]);
 
   const toggleLanguage = () => {
+    if (isLanguageLoading) {
+      return;
+    }
+
     const newLang = lang === 'en' ? 'th' : 'en';
     const params = new URLSearchParams(searchParams.toString());
     params.set('lang', newLang);
+    setLoadingTarget(`${pathname}?${params.toString()}`);
     setIsMobileMenuOpen(false);
     router.push(`${pathname}?${params.toString()}`);
   };
@@ -78,8 +87,22 @@ export default function Header({ lang }: HeaderProps) {
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
-      <div className="mx-auto max-w-7xl px-4 pt-4 md:px-8">
+    <>
+      <AnimatePresence>
+        {isLanguageLoading ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] bg-[rgba(247,247,243,0.78)] backdrop-blur-sm"
+          >
+            <PageLoader label={lang === 'th' ? 'กำลังโหลด' : 'Loading'} fullscreen={false} />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div className="mx-auto max-w-7xl px-4 pt-4 md:px-8">
         <div
           className={`overflow-hidden border ${
             isMobileMenuOpen
@@ -121,7 +144,8 @@ export default function Header({ lang }: HeaderProps) {
             <div className="hidden items-center gap-3 md:flex">
               <button
                 onClick={toggleLanguage}
-                className="rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-foreground transition hover:border-primary hover:text-primary"
+                disabled={isLanguageLoading}
+                className="rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-foreground transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {lang === 'en' ? 'TH' : 'EN'}
               </button>
@@ -136,12 +160,14 @@ export default function Header({ lang }: HeaderProps) {
             <div className="flex items-center gap-2 md:hidden">
               <button
                 onClick={toggleLanguage}
-                className="rounded-full border border-border bg-surface px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground"
+                disabled={isLanguageLoading}
+                className="rounded-full border border-border bg-surface px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {lang === 'en' ? 'TH' : 'EN'}
               </button>
               <button
                 onClick={() => setIsMobileMenuOpen((value) => !value)}
+                disabled={isLanguageLoading}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-foreground"
                 aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 aria-expanded={isMobileMenuOpen}
@@ -190,7 +216,8 @@ export default function Header({ lang }: HeaderProps) {
             ) : null}
           </AnimatePresence>
         </div>
-      </div>
-    </header>
+        </div>
+      </header>
+    </>
   );
 }
