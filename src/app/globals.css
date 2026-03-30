@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --font-inter: var(--font-inter), sans-serif;
+  --font-outfit: var(--font-outfit), sans-serif;
 
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  /* Primary Accent Colors - Slightly deeper Blue for better contrast on light */
+  --color-primary: #1d4ed8; /* blue-700 */
+  --color-primary-hover: #1e40af; /* blue-800 */
+  
+  /* Secondary / Neutral lights for cards */
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f7f7f3;
+    --foreground: #020617; /* Slate 950 for primary text - maximum contrast */
+    --muted: #f1f1eb;
+    --muted-foreground: #475569; /* Slate 600 for secondary text */
+    --surface: #ffffff;
+    --surface-hover: #f7f7f3;
+    --border: #e6e4dc;
+  }
+
+  /* Dark mode variables */
+  .dark {
+    --background: #020617; 
+    --foreground: #f8fafc; 
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --surface: #0f172a; 
+    --surface-hover: #1e293b; 
+    --border: #334155; 
+    --color-primary: #eab308;
+    --color-primary-hover: #ca8a04;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter antialiased transition-colors duration-300;
+    background-image:
+      radial-gradient(circle at top, rgba(29, 78, 216, 0.06), transparent 32%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72));
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-outfit tracking-tight text-foreground font-bold;
+  }
+
+  :lang(th) h1,
+  :lang(th) h2,
+  :lang(th) h3,
+  :lang(th) h4,
+  :lang(th) h5,
+  :lang(th) h6 {
+    letter-spacing: -0.01em;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-full border border-border;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-border;
 }

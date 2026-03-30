@@ -1,0 +1,62 @@
+import { SignJWT, jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+
+const secret = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'fallback-secret-for-development-only'
+);
+
+export async function encrypt(payload: Record<string, unknown>) {
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('2h')
+    .sign(secret);
+}
+
+export async function decrypt(input: string): Promise<Record<string, unknown>> {
+  const { payload } = await jwtVerify(input, secret, {
+    algorithms: ['HS256'],
+  });
+  return payload as Record<string, unknown>;
+}
+
+export async function login(formData: { username: string }) {
+  // This is a helper for the API route
+  const user = { username: formData.username };
+
+  // Create the session
+  const expires = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
+  const session = await encrypt({ user, expires });
+
+  // Save the session in a cookie
+  (await cookies()).set('session', session, { expires, httpOnly: true });
+}
+
+export async function logout() {
+  // Destroy the session
+  (await cookies()).set('session', '', { expires: new Date(0) });
+}
+
+export async function getSession() {
+  const session = (await cookies()).get('session')?.value;
+  if (!session) return null;
+  return await decrypt(session);
+}
+
+export async function updateSession(request: NextRequest) {
+  const session = request.cookies.get('session')?.value;
+  if (!session) return;
+
+  // Refresh the session so it doesn't expire
+  const parsed = await decrypt(session);
+  parsed.expires = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+  const res = NextResponse.next();
+  res.cookies.set({
+    name: 'session',
+    value: await encrypt(parsed),
+    httpOnly: true,
+    expires: new Date(parsed.expires as string),
+  });
+  return res;
+}
