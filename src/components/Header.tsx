@@ -18,11 +18,11 @@ export default function Header({ lang }: HeaderProps) {
   const searchParams = useSearchParams();
 
   const navLinks = [
-    { name: lang === 'th' ? '\u0e2b\u0e19\u0e49\u0e32\u0e41\u0e23\u0e01' : 'Home', href: '#home' },
-    { name: lang === 'th' ? '\u0e1b\u0e23\u0e30\u0e2a\u0e1a\u0e01\u0e32\u0e23\u0e13\u0e4c' : 'Experience', href: '#experience' },
-    { name: lang === 'th' ? '\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32' : 'Education', href: '#education' },
-    { name: lang === 'th' ? '\u0e17\u0e31\u0e01\u0e29\u0e30' : 'Skills', href: '#skills' },
-    { name: lang === 'th' ? '\u0e1c\u0e25\u0e07\u0e32\u0e19' : 'Projects', href: '#portfolio' },
+    { name: lang === 'th' ? 'หน้าหลัก' : 'Home', href: '#home' },
+    { name: lang === 'th' ? 'ประสบการณ์' : 'Experience', href: '#experience' },
+    { name: lang === 'th' ? 'การศึกษา' : 'Education', href: '#education' },
+    { name: lang === 'th' ? 'ทักษะ' : 'Skills', href: '#skills' },
+    { name: lang === 'th' ? 'ผลงาน' : 'Projects', href: '#portfolio' },
   ];
 
   useEffect(() => {
@@ -129,7 +129,7 @@ export default function Header({ lang }: HeaderProps) {
                 href="mailto:tanakhom.rattana@hotmail.com"
                 className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
-                {lang === 'th' ? '\u0e15\u0e34\u0e14\u0e15\u0e48\u0e2d' : 'Contact'}
+                {lang === 'th' ? 'ติดต่อ' : 'Contact'}
               </a>
             </div>
 
@@ -183,7 +183,7 @@ export default function Header({ lang }: HeaderProps) {
                     href="mailto:tanakhom.rattana@hotmail.com"
                     className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white"
                   >
-                    {lang === 'th' ? '\u0e15\u0e34\u0e14\u0e15\u0e48\u0e2d' : 'Contact'}
+                    {lang === 'th' ? 'ติดต่อ' : 'Contact'}
                   </a>
                 </div>
               </motion.div>

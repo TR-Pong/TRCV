@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { FaArrowRight, FaFileDownload } from 'react-icons/fa';
 import { IProfileResolved } from '@/models/CVData';
 
@@ -23,7 +24,7 @@ export default function Hero({ profile, lang }: HeroProps) {
                 lang === 'th' ? 'tracking-[0.04em]' : 'uppercase tracking-[0.26em]'
               }`}
             >
-              {lang === 'th' ? '\u0e1e\u0e2d\u0e23\u0e4c\u0e15\u0e42\u0e1f\u0e25\u0e34\u0e42\u0e2d\u0e02\u0e2d\u0e07\u0e09\u0e31\u0e19' : 'Portfolio'}
+              {lang === 'th' ? 'พอร์ตโฟลิโอของฉัน' : 'Portfolio'}
             </motion.div>
 
             <motion.h1
@@ -65,14 +66,15 @@ export default function Hero({ profile, lang }: HeroProps) {
                 href="#portfolio"
                 className="inline-flex items-center justify-center gap-3 rounded-full bg-slate-950 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
-                <span>{lang === 'th' ? '\u0e14\u0e39\u0e1c\u0e25\u0e07\u0e32\u0e19' : 'View Projects'}</span>
+                <span>{lang === 'th' ? 'ดูผลงาน' : 'View Projects'}</span>
                 <FaArrowRight size={12} />
               </a>
               <a
-                href="#"
+                href="./Tanakhom CV.pdf"
+                target='_blank'
                 className="inline-flex items-center justify-center gap-3 rounded-full border border-border bg-surface px-6 py-4 text-sm font-semibold text-foreground transition hover:border-primary hover:text-primary"
               >
-                <span>{lang === 'th' ? '\u0e14\u0e32\u0e27\u0e19\u0e4c\u0e42\u0e2b\u0e25\u0e14 CV' : 'Download CV'}</span>
+                <span>{lang === 'th' ? 'ดาวน์โหลด CV' : 'Download CV'}</span>
                 <FaFileDownload size={13} />
               </a>
             </motion.div>
@@ -84,13 +86,25 @@ export default function Hero({ profile, lang }: HeroProps) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="grid gap-4"
           >
+            <div className="rounded-[36px] border border-border bg-surface p-4 shadow-[0_20px_50px_rgba(15,23,42,0.05)]">
+              <div className="overflow-hidden rounded-[28px] bg-muted">
+                <Image
+                  src="/img/profile.JPG"
+                  alt={profile.name}
+                  width={720}
+                  height={900}
+                  priority
+                  className="h-[320px] w-full object-cover object-center"
+                />
+              </div>
+            </div>
             <div className="rounded-[32px] border border-border bg-surface p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)]">
               <div
                 className={`text-xs font-semibold text-muted-foreground ${
                   lang === 'th' ? 'tracking-[0.04em]' : 'uppercase tracking-[0.24em]'
                 }`}
               >
-                {lang === 'th' ? '\u0e17\u0e35\u0e48\u0e2d\u0e22\u0e39\u0e48' : 'Location'}
+                {lang === 'th' ? 'ที่อยู่' : 'Location'}
               </div>
               <div className="mt-3 text-2xl font-outfit font-semibold text-foreground">{profile.location}</div>
             </div>
@@ -100,7 +114,7 @@ export default function Hero({ profile, lang }: HeroProps) {
                   lang === 'th' ? 'tracking-[0.04em]' : 'uppercase tracking-[0.24em]'
                 }`}
               >
-                {lang === 'th' ? '\u0e2d\u0e35\u0e40\u0e21\u0e25' : 'Email'}
+                {lang === 'th' ? 'อีเมล' : 'Email'}
               </div>
               <div className="mt-3 break-all text-base text-foreground">{profile.email}</div>
             </div>

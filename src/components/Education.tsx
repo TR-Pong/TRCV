@@ -15,11 +15,11 @@ export default function Education({ education, lang }: EducationProps) {
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <SectionHeading
           lang={lang}
-          eyebrow={lang === 'th' ? '\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32' : 'Education'}
-          title={lang === 'th' ? '\u0e1e\u0e37\u0e49\u0e19\u0e10\u0e32\u0e19\u0e17\u0e32\u0e07\u0e27\u0e34\u0e0a\u0e32\u0e01\u0e32\u0e23' : 'Academic Background'}
+          eyebrow={lang === 'th' ? 'การศึกษา' : 'Education'}
+          title={lang === 'th' ? 'ประวัติการศึกษา' : 'Academic Background'}
           description={
             lang === 'th'
-              ? '\u0e2a\u0e23\u0e38\u0e1b\u0e40\u0e2a\u0e49\u0e19\u0e17\u0e32\u0e07\u0e01\u0e32\u0e23\u0e28\u0e36\u0e01\u0e29\u0e32\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49\u0e17\u0e35\u0e48\u0e40\u0e1b\u0e47\u0e19\u0e10\u0e32\u0e19\u0e02\u0e2d\u0e07\u0e07\u0e32\u0e19\u0e14\u0e49\u0e32\u0e19\u0e40\u0e17\u0e04\u0e42\u0e19\u0e42\u0e25\u0e22\u0e35\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e1e\u0e31\u0e12\u0e19\u0e32\u0e1c\u0e25\u0e34\u0e15\u0e20\u0e31\u0e13\u0e11\u0e4c'
+              ? 'สรุปเส้นทางการศึกษาและจุดเปลี่ยนที่สำคัญในการสร้างพื้นฐานทางเทคนิคของฉัน'
               : 'Formal education and learning milestones that shaped my technical foundation.'
           }
         />

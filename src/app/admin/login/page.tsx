@@ -94,7 +94,7 @@ export default function LoginPage() {
                     required
                     value={username}
                     onChange={(event) => setUsername(event.target.value)}
-                    placeholder="tr.pong"
+                    placeholder="Enter your username"
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white"
                   />
                 </label>

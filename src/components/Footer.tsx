@@ -32,7 +32,7 @@ export default function Footer({ lang }: FooterProps) {
               <FaGithub size={20} />
             </a>
             <a
-              href="#"
+              href="https://www.linkedin.com/in/tanakhom-rat/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground transition hover:text-foreground"
@@ -51,11 +51,11 @@ export default function Footer({ lang }: FooterProps) {
             <p>
               © {currentYear} Tanakhom Rattanasrisawat.{' '}
               {lang === 'th'
-                ? '\u0e2a\u0e07\u0e27\u0e19\u0e25\u0e34\u0e02\u0e2a\u0e34\u0e17\u0e18\u0e34\u0e4c\u0e17\u0e31\u0e49\u0e07\u0e2b\u0e21\u0e14'
+                ? 'สงวนลิขสิทธิ์.'
                 : 'All rights reserved.'}
             </p>
             <p className="mt-2 text-xs opacity-80">
-              {lang === 'th' ? '\u0e1e\u0e31\u0e12\u0e19\u0e32\u0e14\u0e49\u0e27\u0e22' : 'Built with'} Next.js,
+              {lang === 'th' ? 'สร้างด้วย' : 'Built with'} Next.js,
               Tailwind CSS & Framer Motion
             </p>
           </div>
