@@ -56,5 +56,6 @@ export function createProjectItem(): ProjectFormData {
     techStack: [],
     link: '',
     github: '',
+    imageUrl: '',
   };
 }

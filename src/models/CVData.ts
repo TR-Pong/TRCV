@@ -89,6 +89,7 @@ export interface IProjectData {
   techStack: string[];
   link: string;
   github: string;
+  imageUrl: string;
 }
 
 export interface IProject extends IProjectData, Document {}
@@ -99,6 +100,7 @@ const ProjectSchema = new Schema<IProject>({
   techStack: { type: [String], required: true },
   link: { type: String, required: false },
   github: { type: String, required: false },
+  imageUrl: { type: String, required: false, default: '' },
 });
 
 export const ProfileModel = (mongoose.models.Profile as Model<IProfile>) || mongoose.model<IProfile>('Profile', ProfileSchema);
@@ -148,4 +150,5 @@ export interface IProjectResolved {
   techStack: string[];
   link: string;
   github: string;
+  imageUrl: string;
 }

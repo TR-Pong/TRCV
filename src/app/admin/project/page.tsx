@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { FaPen, FaPlus, FaSave, FaTrash } from 'react-icons/fa';
 import { AdminFeedback } from '@/components/admin/AdminFeedback';
 import { AdminListCard } from '@/components/admin/AdminListCard';
@@ -9,7 +10,7 @@ import { EmptyState, LoadingState } from '@/components/admin/AdminStates';
 import { FormCard } from '@/components/admin/FormCard';
 import { LocalizedInput } from '@/components/admin/LocalizedInput';
 import { TagInput } from '@/components/admin/TagInput';
-import { deleteSectionItem, fetchSectionData, saveSectionItem } from '@/lib/admin/api';
+import { deleteSectionItem, fetchSectionData, saveSectionItem, uploadProjectImage } from '@/lib/admin/api';
 import { createProjectItem } from '@/lib/admin/factories';
 import type { ProjectFormData } from '@/lib/admin/types';
 
@@ -18,6 +19,7 @@ export default function AdminProjectPage() {
   const [editingItem, setEditingItem] = useState<ProjectFormData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [message, setMessage] = useState('');
 
   const loadItems = async () => {
@@ -63,6 +65,32 @@ export default function AdminProjectPage() {
       await loadItems();
     } catch {
       setMessage('Failed to delete project.');
+    }
+  };
+
+  const handleImageUpload = async (file: File) => {
+    if (!editingItem) return;
+
+    setUploadingImage(true);
+    setMessage('');
+
+    try {
+      const imageUrl = await uploadProjectImage(file, editingItem.imageUrl || undefined);
+      const nextItem = { ...editingItem, imageUrl };
+
+      setEditingItem(nextItem);
+
+      if (nextItem._id) {
+        await saveSectionItem('project', nextItem);
+        setMessage('Project image uploaded and saved successfully.');
+        await loadItems();
+      } else {
+        setMessage('Project image uploaded successfully. Save the project to store it in the database.');
+      }
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Failed to upload project image.');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -119,6 +147,39 @@ export default function AdminProjectPage() {
             title="Links and Stack"
             description="Add stack tags one by one and keep project destinations up to date."
           >
+            <div className="space-y-3">
+              <span className="text-sm font-semibold text-slate-700">Project Image</span>
+              <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-slate-50">
+                {editingItem.imageUrl ? (
+                  <Image
+                    src={editingItem.imageUrl}
+                    alt={editingItem.title.en || 'Project preview'}
+                    width={1200}
+                    height={800}
+                    className="h-56 w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-56 items-center justify-center px-6 text-center text-sm text-slate-400">
+                    Upload a project preview image to show this work on the landing page.
+                  </div>
+                )}
+              </div>
+              <label className="inline-flex cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) {
+                      void handleImageUpload(file);
+                    }
+                    event.currentTarget.value = '';
+                  }}
+                />
+                {uploadingImage ? 'Uploading image...' : editingItem.imageUrl ? 'Replace Image' : 'Upload Image'}
+              </label>
+            </div>
             <TagInput
               label="Tech Stack"
               value={editingItem.techStack}

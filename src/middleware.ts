@@ -34,9 +34,22 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  if (pathname.startsWith('/api/upload') && request.method !== 'GET') {
+    const session = request.cookies.get('session')?.value;
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    try {
+      await decrypt(session);
+      return NextResponse.next();
+    } catch {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/cv/:path*'],
+  matcher: ['/admin/:path*', '/api/cv/:path*', '/api/upload/:path*'],
 };

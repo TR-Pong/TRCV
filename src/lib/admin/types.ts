@@ -45,6 +45,7 @@ export interface ProjectFormData {
   techStack: string[];
   link: string;
   github: string;
+  imageUrl: string;
 }
 
 export type AdminEntityMap = {

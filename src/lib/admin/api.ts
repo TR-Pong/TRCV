@@ -73,3 +73,30 @@ export async function deleteSectionItem(section: CollectionSection, id: string):
     throw new Error(`Failed to delete ${section}`);
   }
 }
+
+export async function uploadProjectImage(file: File, previousImageUrl?: string): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  if (previousImageUrl) {
+    formData.append('previousImageUrl', previousImageUrl);
+  }
+
+  const response = await fetch('/api/upload/project-image', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (response.status === 401) {
+    redirectToLogin();
+    throw new Error('Unauthorized');
+  }
+
+  const data = (await response.json()) as { url?: string; error?: string };
+
+  if (!response.ok || !data.url) {
+    throw new Error(data.error || 'Failed to upload project image');
+  }
+
+  return data.url;
+}
