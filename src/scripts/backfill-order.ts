@@ -6,9 +6,24 @@ import { getMongoConfig } from '../lib/mongodb-config';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
 
+type OrderableItem = {
+  _id: mongoose.Types.ObjectId;
+  order?: number | null;
+  enabled?: boolean | null;
+};
+
+type OrderableModel = {
+  find(): {
+    sort(sortBy: { _id: 1 | -1 }): {
+      lean(): Promise<OrderableItem[]>;
+    };
+  };
+  updateOne(filter: { _id: mongoose.Types.ObjectId }, update: { $set: Record<string, number | boolean> }): Promise<unknown>;
+};
+
 async function backfillCollection(
   name: 'skills' | 'projects',
-  model: typeof SkillModel | typeof ProjectModel
+  model: OrderableModel
 ) {
   const items = await model.find().sort({ _id: 1 }).lean();
   let updatedCount = 0;

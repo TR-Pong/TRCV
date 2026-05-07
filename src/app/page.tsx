@@ -5,7 +5,12 @@ import {
   ExperienceModel, 
   EducationModel, 
   SkillModel, 
-  ProjectModel 
+  ProjectModel,
+  type IProfileResolved,
+  type IExperienceResolved,
+  type IEducationResolved,
+  type ISkillResolved,
+  type IProjectResolved,
 } from '@/models/CVData';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -88,11 +93,11 @@ export default async function Home({
   }
 
   // Resolve localized strings
-  const profile = resolveLang(profileRaw, lang);
-  const experiences = resolveLang(experiencesRaw, lang);
-  const education = resolveLang(educationRaw, lang);
-  const skills = normalizeOrderedItems(resolveLang(skillsRaw, lang));
-  const projects = normalizeOrderedItems(resolveLang(projectsRaw, lang));
+  const profile = resolveLang(profileRaw, lang) as IProfileResolved;
+  const experiences = resolveLang(experiencesRaw, lang) as IExperienceResolved[];
+  const education = resolveLang(educationRaw, lang) as IEducationResolved[];
+  const skills = normalizeOrderedItems(resolveLang(skillsRaw, lang) as ISkillResolved[]);
+  const projects = normalizeOrderedItems(resolveLang(projectsRaw, lang) as IProjectResolved[]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground scroll-smooth">

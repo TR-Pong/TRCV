@@ -1,4 +1,3 @@
-import type { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import {
   defaultPublicLocale,
   LANGUAGE_COOKIE_KEY,
@@ -6,13 +5,17 @@ import {
   type PublicLocale,
 } from '@/lib/i18n/public-resources';
 
+type CookieReader = {
+  get(name: string): { value: string } | undefined;
+};
+
 function isSupportedLocale(value: string | undefined): value is PublicLocale {
   return value === 'en' || value === 'th';
 }
 
 export function resolvePublicLocale(
   queryLang?: string | string[],
-  cookieStore?: RequestCookies
+  cookieStore?: CookieReader
 ): PublicLocale {
   const queryValue = Array.isArray(queryLang) ? queryLang[0] : queryLang;
   if (isSupportedLocale(queryValue)) {
