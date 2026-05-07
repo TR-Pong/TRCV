@@ -29,10 +29,18 @@ function normalizeItems(items: SkillFormData[]) {
     .sort((left, right) => left.order - right.order);
 }
 
+function getNextOrder(items: Array<{ order?: number }>) {
+  const maxOrder = items.reduce((currentMax, item) => {
+    return typeof item.order === 'number' ? Math.max(currentMax, item.order) : currentMax;
+  }, -1);
+
+  return maxOrder + 1;
+}
+
 function buildNewSkillItem(items: SkillFormData[]) {
   return {
     ...createSkillItem(),
-    order: items.length,
+    order: getNextOrder(items),
     enabled: true,
   };
 }

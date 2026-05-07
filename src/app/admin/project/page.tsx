@@ -40,10 +40,18 @@ function normalizeItems(items: ProjectFormData[]) {
     .sort((left, right) => left.order - right.order);
 }
 
+function getNextOrder(items: Array<{ order?: number }>) {
+  const maxOrder = items.reduce((currentMax, item) => {
+    return typeof item.order === 'number' ? Math.max(currentMax, item.order) : currentMax;
+  }, -1);
+
+  return maxOrder + 1;
+}
+
 function buildNewProjectItem(items: ProjectFormData[]) {
   return {
     ...createProjectItem(),
-    order: items.length,
+    order: getNextOrder(items),
     enabled: true,
   };
 }
