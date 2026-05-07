@@ -10,13 +10,21 @@ const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const BLOB_PROJECT_UPLOAD_PREFIX = 'projects/';
 const BLOB_HOST_SUFFIX = '.public.blob.vercel-storage.com';
 
+function getBlobReadWriteToken() {
+  return (
+    process.env.BLOB_READ_WRITE_TOKEN ||
+    process.env.PROJECTSPIC_READ_WRITE_TOKEN ||
+    process.env.projectspic_READ_WRITE_TOKEN
+  );
+}
+
 function shouldUseBlobStorage() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  return Boolean(getBlobReadWriteToken());
 }
 
 function assertStorageConfiguration() {
-  if (process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error('BLOB_READ_WRITE_TOKEN is required for project image uploads on Vercel.');
+  if (process.env.VERCEL && !getBlobReadWriteToken()) {
+    throw new Error('A Blob read/write token is required for project image uploads on Vercel.');
   }
 }
 
@@ -57,10 +65,12 @@ export async function saveCompressedProjectImage(file: File) {
     .toBuffer();
 
   if (shouldUseBlobStorage()) {
+    const token = getBlobReadWriteToken();
     const blob = await put(`${BLOB_PROJECT_UPLOAD_PREFIX}${fileName}`, optimizedBuffer, {
       access: 'public',
       contentType: 'image/webp',
       addRandomSuffix: false,
+      token,
     });
 
     return {
@@ -88,7 +98,7 @@ export async function removePreviousProjectImage(previousImageUrl?: string | nul
   }
 
   if (isBlobProjectImageUrl(previousImageUrl)) {
-    await del(previousImageUrl);
+    await del(previousImageUrl, { token: getBlobReadWriteToken() });
     return;
   }
 
