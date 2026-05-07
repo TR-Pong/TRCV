@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ISkillResolved } from '@/models/CVData';
 import SectionHeading from '@/components/SectionHeading';
 
@@ -10,21 +11,19 @@ interface SkillsProps {
 }
 
 export default function Skills({ skills, lang }: SkillsProps) {
+  const { t } = useTranslation(['public']);
+
   return (
     <section id="skills" className="py-24 md:py-28">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <SectionHeading
           lang={lang}
-          eyebrow={lang === 'th' ? 'ทักษะ' : 'Skills'}
-          title={lang === 'th' ? 'เครื่องมือและความสามารถ' : 'Tools and Capabilities'}
-          description={
-            lang === 'th'
-              ? 'ภาพรวมที่เป็นประโยชน์ของเทคโนโลยี โครงสร้าง และเครื่องมือที่ฉันใช้งานมากที่สุด'
-              : 'A practical overview of the technologies, frameworks, and tools I work with most.'
-          }
+          eyebrow={t('public:skills.eyebrow')}
+          title={t('public:skills.title')}
+          description={t('public:skills.description')}
         />
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-14 grid gap-10 border-t border-border/70 pt-8 lg:grid-cols-3">
           {skills.map((skillGroup, index) => (
             <motion.article
               key={`${skillGroup.category}-${index}`}
@@ -32,14 +31,15 @@ export default function Skills({ skills, lang }: SkillsProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.45, delay: index * 0.06 }}
-              className="rounded-[32px] border border-border bg-surface p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)] md:p-8"
+              className="border-l border-border/80 pl-5 md:pl-6"
             >
-              <h3 className="text-2xl font-outfit font-semibold text-foreground">{skillGroup.category}</h3>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="h-px w-12 bg-[linear-gradient(90deg,rgba(29,78,216,0.9),rgba(15,23,42,0.25))]" />
+              <h3 className="mt-5 text-2xl font-outfit font-semibold text-foreground">{skillGroup.category}</h3>
+              <div className="mt-5 flex flex-wrap gap-3">
                 {skillGroup.items.map((item, itemIndex) => (
                   <span
                     key={`${item}-${itemIndex}`}
-                    className="rounded-full border border-border bg-muted px-4 py-2 text-sm text-muted-foreground"
+                    className="rounded-full bg-muted/80 px-4 py-2 text-sm text-muted-foreground"
                   >
                     {item}
                   </span>

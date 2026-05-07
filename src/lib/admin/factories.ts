@@ -46,6 +46,8 @@ export function createSkillItem(): SkillFormData {
   return {
     category: createLocalizedField(),
     items: [createLocalizedField()],
+    order: 0,
+    enabled: true,
   };
 }
 
@@ -57,5 +59,7 @@ export function createProjectItem(): ProjectFormData {
     link: '',
     github: '',
     imageUrl: '',
+    order: 0,
+    enabled: true,
   };
 }

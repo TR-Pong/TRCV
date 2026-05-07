@@ -39,7 +39,12 @@ export async function saveSectionItem(
   const isProfile = section === 'profile';
   const record = payload as { _id?: string };
   const method = isProfile || record._id ? 'PUT' : 'POST';
-  const body = isProfile ? payload : method === 'PUT' ? { ...record, id: record._id } : payload;
+  const body = isProfile
+    ? payload
+    : (() => {
+        const { _id, ...rest } = record;
+        return method === 'PUT' ? { ...rest, id: _id } : rest;
+      })();
 
   const response = await fetch(`/api/cv/${section}`, {
     method,
@@ -71,6 +76,26 @@ export async function deleteSectionItem(section: CollectionSection, id: string):
 
   if (!response.ok) {
     throw new Error(`Failed to delete ${section}`);
+  }
+}
+
+export async function reorderSectionItems(
+  section: Extract<CollectionSection, 'skill' | 'project'>,
+  items: Array<{ id: string; order: number }>
+): Promise<void> {
+  const response = await fetch(`/api/cv/${section}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+  });
+
+  if (response.status === 401) {
+    redirectToLogin();
+    throw new Error('Unauthorized');
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to reorder ${section}`);
   }
 }
 

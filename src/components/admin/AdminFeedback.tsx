@@ -11,7 +11,7 @@ export function AdminFeedback({ message }: { message: string }) {
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl border px-4 py-3 text-sm font-medium ${
+      className={`rounded-xl border px-4 py-3 text-sm font-medium ${
         success
           ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
           : 'border-red-200 bg-red-50 text-red-700'

@@ -1,3 +1,4 @@
+import 'gooey-toast/styles.css';
 import type { ReactNode } from 'react';
 import { AdminShell } from '@/components/admin/AdminShell';
 

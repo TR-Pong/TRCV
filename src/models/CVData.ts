@@ -1,5 +1,13 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+function createModel<T extends Document>(name: string, schema: Schema<T>) {
+  if (process.env.NODE_ENV !== 'production' && mongoose.models[name]) {
+    delete mongoose.models[name];
+  }
+
+  return (mongoose.models[name] as Model<T>) || mongoose.model<T>(name, schema);
+}
+
 export interface ILocalizedString {
   en: string;
   th: string;
@@ -73,6 +81,8 @@ const EducationSchema = new Schema<IEducation>({
 export interface ISkillData {
   category: ILocalizedString;
   items: ILocalizedString[];
+  order: number;
+  enabled: boolean;
 }
 
 export interface ISkill extends ISkillData, Document {}
@@ -80,6 +90,8 @@ export interface ISkill extends ISkillData, Document {}
 const SkillSchema = new Schema<ISkill>({
   category: { type: LocalizedStringSchema, required: true },
   items: { type: [LocalizedStringSchema], required: true },
+  order: { type: Number, required: false, default: 0 },
+  enabled: { type: Boolean, required: false, default: true },
 });
 
 // Project
@@ -90,6 +102,8 @@ export interface IProjectData {
   link: string;
   github: string;
   imageUrl: string;
+  order: number;
+  enabled: boolean;
 }
 
 export interface IProject extends IProjectData, Document {}
@@ -101,13 +115,15 @@ const ProjectSchema = new Schema<IProject>({
   link: { type: String, required: false },
   github: { type: String, required: false },
   imageUrl: { type: String, required: false, default: '' },
+  order: { type: Number, required: false, default: 0 },
+  enabled: { type: Boolean, required: false, default: true },
 });
 
-export const ProfileModel = (mongoose.models.Profile as Model<IProfile>) || mongoose.model<IProfile>('Profile', ProfileSchema);
-export const ExperienceModel = (mongoose.models.Experience as Model<IExperience>) || mongoose.model<IExperience>('Experience', ExperienceSchema);
-export const EducationModel = (mongoose.models.Education as Model<IEducation>) || mongoose.model<IEducation>('Education', EducationSchema);
-export const SkillModel = (mongoose.models.Skill as Model<ISkill>) || mongoose.model<ISkill>('Skill', SkillSchema);
-export const ProjectModel = (mongoose.models.Project as Model<IProject>) || mongoose.model<IProject>('Project', ProjectSchema);
+export const ProfileModel = createModel<IProfile>('Profile', ProfileSchema);
+export const ExperienceModel = createModel<IExperience>('Experience', ExperienceSchema);
+export const EducationModel = createModel<IEducation>('Education', EducationSchema);
+export const SkillModel = createModel<ISkill>('Skill', SkillSchema);
+export const ProjectModel = createModel<IProject>('Project', ProjectSchema);
 
 // Resolved types for Frontend
 export interface IProfileResolved {
@@ -141,6 +157,8 @@ export interface ISkillResolved {
   _id?: string;
   category: string;
   items: string[];
+  order: number;
+  enabled: boolean;
 }
 
 export interface IProjectResolved {
@@ -151,4 +169,6 @@ export interface IProjectResolved {
   link: string;
   github: string;
   imageUrl: string;
+  order: number;
+  enabled: boolean;
 }

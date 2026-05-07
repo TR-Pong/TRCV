@@ -2,17 +2,51 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { FaPen, FaPlus, FaSave, FaTrash } from 'react-icons/fa';
-import { AdminFeedback } from '@/components/admin/AdminFeedback';
-import { AdminListCard } from '@/components/admin/AdminListCard';
+import {
+  FaArrowDown,
+  FaArrowUp,
+  FaEye,
+  FaEyeSlash,
+  FaPen,
+  FaPlus,
+  FaSave,
+  FaTrash,
+} from 'react-icons/fa';
+import { AdminModal } from '@/components/admin/AdminModal';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { EmptyState, LoadingState } from '@/components/admin/AdminStates';
 import { FormCard } from '@/components/admin/FormCard';
 import { LocalizedInput } from '@/components/admin/LocalizedInput';
 import { TagInput } from '@/components/admin/TagInput';
-import { deleteSectionItem, fetchSectionData, saveSectionItem, uploadProjectImage } from '@/lib/admin/api';
+import { deleteSectionItem, fetchSectionData, reorderSectionItems, saveSectionItem, uploadProjectImage } from '@/lib/admin/api';
 import { createProjectItem } from '@/lib/admin/factories';
+import { notifyError, notifyInfo, notifySuccess } from '@/lib/admin/toast';
 import type { ProjectFormData } from '@/lib/admin/types';
+
+const primaryButtonClassName =
+  'inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60';
+const secondaryButtonClassName =
+  'inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50';
+const dangerButtonClassName =
+  'inline-flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-3.5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100';
+
+function normalizeItems(items: ProjectFormData[]) {
+  return [...items]
+    .map((item, index) => ({
+      ...item,
+      order: typeof item.order === 'number' ? item.order : index,
+      enabled: item.enabled ?? true,
+    }))
+    .sort((left, right) => left.order - right.order);
+}
+
+function buildNewProjectItem(items: ProjectFormData[]) {
+  return {
+    ...createProjectItem(),
+    order: items.length,
+    enabled: true,
+  };
+}
 
 export default function AdminProjectPage() {
   const [items, setItems] = useState<ProjectFormData[]>([]);
@@ -20,15 +54,14 @@ export default function AdminProjectPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [message, setMessage] = useState('');
 
   const loadItems = async () => {
     setLoading(true);
     try {
       const nextItems = await fetchSectionData('project');
-      setItems(Array.isArray(nextItems) ? nextItems : []);
+      setItems(normalizeItems(Array.isArray(nextItems) ? nextItems : []));
     } catch {
-      setMessage('Failed to load project entries.');
+      notifyError('Could not load projects');
     } finally {
       setLoading(false);
     }
@@ -38,19 +71,30 @@ export default function AdminProjectPage() {
     void loadItems();
   }, []);
 
+  const startNew = () => {
+    setEditingItem(buildNewProjectItem(items));
+  };
+
+  const startEdit = (item: ProjectFormData) => {
+    setEditingItem(structuredClone(item));
+  };
+
+  const closeModal = () => {
+    setEditingItem(null);
+  };
+
   const handleSave = async () => {
     if (!editingItem) return;
 
     setSaving(true);
-    setMessage('');
 
     try {
       await saveSectionItem('project', editingItem);
+      notifySuccess('Project saved');
       setEditingItem(null);
-      setMessage('Project saved successfully.');
       await loadItems();
     } catch {
-      setMessage('Failed to save project.');
+      notifyError('Failed to save project');
     } finally {
       setSaving(false);
     }
@@ -61,10 +105,46 @@ export default function AdminProjectPage() {
 
     try {
       await deleteSectionItem('project', id);
-      setMessage('Project deleted successfully.');
+      notifySuccess('Project deleted');
       await loadItems();
     } catch {
-      setMessage('Failed to delete project.');
+      notifyError('Failed to delete project');
+    }
+  };
+
+  const persistReorder = async (sourceIndex: number, targetIndex: number) => {
+    const reorderedItems = [...items];
+    const [movedItem] = reorderedItems.splice(sourceIndex, 1);
+    reorderedItems.splice(targetIndex, 0, movedItem);
+
+    const normalized = reorderedItems.map((item, index) => ({ ...item, order: index }));
+
+    setItems(normalized);
+
+    try {
+      await reorderSectionItems(
+        'project',
+        normalized.filter((item) => item._id).map((item) => ({ id: item._id as string, order: item.order }))
+      );
+      notifySuccess('Project order updated');
+      await loadItems();
+    } catch {
+      notifyError('Failed to update project order');
+    }
+  };
+
+  const toggleVisibility = async (item: ProjectFormData) => {
+    const nextItem = { ...item, enabled: !item.enabled };
+
+    try {
+      await saveSectionItem('project', nextItem);
+      notifyInfo(nextItem.enabled ? 'Project is now visible' : 'Project hidden from public page');
+      if (editingItem?._id === item._id) {
+        setEditingItem(nextItem);
+      }
+      await loadItems();
+    } catch {
+      notifyError('Failed to update visibility');
     }
   };
 
@@ -72,84 +152,145 @@ export default function AdminProjectPage() {
     if (!editingItem) return;
 
     setUploadingImage(true);
-    setMessage('');
 
     try {
       const imageUrl = await uploadProjectImage(file, editingItem.imageUrl || undefined);
-      const nextItem = { ...editingItem, imageUrl };
-
-      setEditingItem(nextItem);
-
-      if (nextItem._id) {
-        await saveSectionItem('project', nextItem);
-        setMessage('Project image uploaded and saved successfully.');
-        await loadItems();
-      } else {
-        setMessage('Project image uploaded successfully. Save the project to store it in the database.');
-      }
+      setEditingItem({ ...editingItem, imageUrl });
+      notifyInfo(editingItem._id ? 'Image uploaded. Save to confirm changes.' : 'Image uploaded successfully');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Failed to upload project image.');
+      notifyError(error instanceof Error ? error.message : 'Failed to upload project image');
     } finally {
       setUploadingImage(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <AdminPageHeader
         eyebrow="Projects"
         title="Portfolio Projects"
-        description="Maintain featured projects, bilingual summaries, tech stack tags, and destination links."
+        description="Manage project order, visibility, imagery, and public-facing content from one list."
         actions={
-          <>
-            {editingItem ? (
-              <button
-                onClick={() => setEditingItem(null)}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                Back to List
-              </button>
-            ) : null}
-            <button
-              onClick={editingItem ? handleSave : () => setEditingItem(createProjectItem())}
-              disabled={saving}
-              className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_30px_rgba(37,99,235,0.24)] transition hover:bg-blue-700 disabled:opacity-60"
-            >
-              {editingItem ? <FaSave size={14} /> : <FaPlus size={14} />}
-              {editingItem ? (saving ? 'Saving...' : 'Save Project') : 'Add Project'}
-            </button>
-          </>
+          <button onClick={startNew} className={primaryButtonClassName}>
+            <FaPlus size={12} />
+            Add Project
+          </button>
         }
       />
 
-      <AdminFeedback message={message} />
+      {loading ? (
+        <LoadingState label="Loading project entries..." />
+      ) : items.length === 0 ? (
+        <EmptyState title="No projects yet" description="Add your first featured project to populate the portfolio showcase." />
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Order</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Project</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Stack</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Status</th>
+                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {items.map((item, index) => (
+                  <tr key={item._id} className="align-top">
+                    <td className="px-4 py-4 text-sm font-semibold text-slate-500">#{index + 1}</td>
+                    <td className="px-4 py-4">
+                      <div className="text-sm font-semibold text-slate-900">{item.title.en || 'Untitled project'}</div>
+                      <div className="mt-1 line-clamp-2 text-sm text-slate-500">{item.description.en || 'No description'}</div>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-slate-500">
+                      {item.techStack.length ? item.techStack.slice(0, 3).join(', ') : 'No stack'}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                          item.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        {item.enabled ? 'Visible' : 'Hidden'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <button
+                          onClick={() => void persistReorder(index, index - 1)}
+                          disabled={index === 0}
+                          className={secondaryButtonClassName}
+                        >
+                          <FaArrowUp size={12} />
+                        </button>
+                        <button
+                          onClick={() => void persistReorder(index, index + 1)}
+                          disabled={index === items.length - 1}
+                          className={secondaryButtonClassName}
+                        >
+                          <FaArrowDown size={12} />
+                        </button>
+                        <button onClick={() => void toggleVisibility(item)} className={secondaryButtonClassName}>
+                          {item.enabled ? <FaEyeSlash size={12} /> : <FaEye size={12} />}
+                          {item.enabled ? 'Hide' : 'Show'}
+                        </button>
+                        <button onClick={() => startEdit(item)} className={secondaryButtonClassName}>
+                          <FaPen size={12} />
+                          Edit
+                        </button>
+                        <button onClick={() => item._id && handleDelete(item._id)} className={dangerButtonClassName}>
+                          <FaTrash size={12} />
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
-      {editingItem ? (
-        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <FormCard
-            title={editingItem._id ? 'Edit Project' : 'New Project'}
-            description="Write a clear bilingual summary for the public portfolio."
-          >
-            <LocalizedInput
-              label="Title"
-              value={editingItem.title}
-              onChange={(value) => setEditingItem({ ...editingItem, title: value })}
-            />
-            <LocalizedInput
-              label="Description"
-              value={editingItem.description}
-              onChange={(value) => setEditingItem({ ...editingItem, description: value })}
-              isTextArea
-            />
-          </FormCard>
+      <AdminModal
+        open={!!editingItem}
+        title={editingItem?._id ? 'Edit Project' : 'New Project'}
+        description="Update project content, image, stack, links, and visibility in one place."
+        onClose={closeModal}
+      >
+        {editingItem ? (
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
+              <div className="text-sm text-slate-500">
+                Display status:{' '}
+                <span className="font-semibold text-slate-700">{editingItem.enabled ? 'Visible' : 'Hidden'}</span>
+              </div>
+              <button
+                onClick={() => setEditingItem({ ...editingItem, enabled: !editingItem.enabled })}
+                className={secondaryButtonClassName}
+              >
+                {editingItem.enabled ? <FaEyeSlash size={12} /> : <FaEye size={12} />}
+                {editingItem.enabled ? 'Hide on public page' : 'Show on public page'}
+              </button>
+            </div>
 
-          <FormCard
-            title="Links and Stack"
-            description="Add stack tags one by one and keep project destinations up to date."
-          >
-            <div className="space-y-3">
-              <span className="text-sm font-semibold text-slate-700">Project Image</span>
-              <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-slate-50">
+            <FormCard title="Project Content">
+              <LocalizedInput
+                label="Title"
+                value={editingItem.title}
+                onChange={(value) => setEditingItem({ ...editingItem, title: value })}
+              />
+              <LocalizedInput
+                label="Description"
+                value={editingItem.description}
+                onChange={(value) => setEditingItem({ ...editingItem, description: value })}
+                isTextArea
+              />
+            </FormCard>
+
+            <FormCard title="Project Image">
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
                 {editingItem.imageUrl ? (
                   <Image
                     src={editingItem.imageUrl}
@@ -164,7 +305,8 @@ export default function AdminProjectPage() {
                   </div>
                 )}
               </div>
-              <label className="inline-flex cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+
+              <label className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
@@ -179,68 +321,44 @@ export default function AdminProjectPage() {
                 />
                 {uploadingImage ? 'Uploading image...' : editingItem.imageUrl ? 'Replace Image' : 'Upload Image'}
               </label>
+            </FormCard>
+
+            <FormCard title="Stack and Links">
+              <TagInput
+                label="Tech Stack"
+                value={editingItem.techStack}
+                onChange={(techStack) => setEditingItem({ ...editingItem, techStack })}
+                placeholder="Next.js"
+              />
+
+              <label className="block space-y-2">
+                <span className="text-sm font-semibold text-slate-700">Project Link</span>
+                <input
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
+                  value={editingItem.link}
+                  onChange={(event) => setEditingItem({ ...editingItem, link: event.target.value })}
+                />
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-sm font-semibold text-slate-700">GitHub</span>
+                <input
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
+                  value={editingItem.github}
+                  onChange={(event) => setEditingItem({ ...editingItem, github: event.target.value })}
+                />
+              </label>
+            </FormCard>
+
+            <div className="flex justify-end">
+              <button onClick={handleSave} disabled={saving} className={primaryButtonClassName}>
+                <FaSave size={14} />
+                {saving ? 'Saving...' : 'Save Project'}
+              </button>
             </div>
-            <TagInput
-              label="Tech Stack"
-              value={editingItem.techStack}
-              onChange={(techStack) => setEditingItem({ ...editingItem, techStack })}
-              placeholder="Next.js"
-            />
-            <label className="block space-y-2">
-              <span className="text-sm font-semibold text-slate-700">Project Link</span>
-              <input
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white"
-                value={editingItem.link}
-                onChange={(event) => setEditingItem({ ...editingItem, link: event.target.value })}
-              />
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm font-semibold text-slate-700">GitHub</span>
-              <input
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white"
-                value={editingItem.github}
-                onChange={(event) => setEditingItem({ ...editingItem, github: event.target.value })}
-              />
-            </label>
-          </FormCard>
-        </div>
-      ) : loading ? (
-        <LoadingState label="Loading project entries..." />
-      ) : items.length === 0 ? (
-        <EmptyState
-          title="No projects yet"
-          description="Add your first featured project to start filling the portfolio showcase."
-        />
-      ) : (
-        <div className="grid gap-4">
-          {items.map((item) => (
-            <AdminListCard
-              key={item._id}
-              title={item.title.en || 'Untitled project'}
-              subtitle={item.description.en || 'No description'}
-              meta={item.techStack.join(' • ') || 'No tech stack'}
-              actions={
-                <>
-                  <button
-                    onClick={() => setEditingItem(structuredClone(item))}
-                    className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                  >
-                    <FaPen size={12} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => item._id && handleDelete(item._id)}
-                    className="inline-flex items-center gap-2 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100"
-                  >
-                    <FaTrash size={12} />
-                    Delete
-                  </button>
-                </>
-              }
-            />
-          ))}
-        </div>
-      )}
+          </div>
+        ) : null}
+      </AdminModal>
     </div>
   );
 }

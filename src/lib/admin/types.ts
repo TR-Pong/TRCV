@@ -36,6 +36,8 @@ export interface SkillFormData {
   _id?: string;
   category: LocalizedFieldValue;
   items: LocalizedFieldValue[];
+  order: number;
+  enabled: boolean;
 }
 
 export interface ProjectFormData {
@@ -46,6 +48,8 @@ export interface ProjectFormData {
   link: string;
   github: string;
   imageUrl: string;
+  order: number;
+  enabled: boolean;
 }
 
 export type AdminEntityMap = {

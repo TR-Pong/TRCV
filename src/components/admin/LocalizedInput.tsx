@@ -12,14 +12,14 @@ export function LocalizedInput({
   isTextArea?: boolean;
 }) {
   const commonClassName =
-    'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white';
+    'w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white';
 
   return (
-    <div className="rounded-[24px] border border-slate-200 bg-slate-50/70 p-4">
+    <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
       <div className="mb-4 text-sm font-semibold text-slate-700">{label}</div>
       <div className="grid gap-4 lg:grid-cols-2">
         <label className="block space-y-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">English</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">English</span>
           {isTextArea ? (
             <textarea
               className={`${commonClassName} min-h-[120px] resize-y`}
@@ -37,7 +37,7 @@ export function LocalizedInput({
         </label>
 
         <label className="block space-y-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Thai</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Thai</span>
           {isTextArea ? (
             <textarea
               className={`${commonClassName} min-h-[120px] resize-y`}

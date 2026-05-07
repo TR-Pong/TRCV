@@ -1,4 +1,5 @@
 import connectToDatabase from '@/lib/mongoose';
+import { cookies } from 'next/headers';
 import { 
   ProfileModel, 
   ExperienceModel, 
@@ -9,10 +10,24 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
+import CapabilityHighlights from '@/components/CapabilityHighlights';
 import Experience from '@/components/Experience';
 import Education from '@/components/Education';
 import Skills from '@/components/Skills';
 import Projects from '@/components/Projects';
+import PublicI18nProvider from '@/components/PublicI18nProvider';
+import { resolvePublicLocale } from '@/lib/i18n/public-server';
+
+function normalizeOrderedItems<T extends { order?: number | null; enabled?: boolean | null }>(items: T[]): T[] {
+  return items
+    .filter((item) => item.enabled ?? true)
+    .sort((left, right) => {
+      const leftOrder = typeof left.order === 'number' ? left.order : Number.MAX_SAFE_INTEGER;
+      const rightOrder = typeof right.order === 'number' ? right.order : Number.MAX_SAFE_INTEGER;
+
+      return leftOrder - rightOrder;
+    });
+}
 
 // Helper to resolve language strings
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,7 +69,8 @@ export default async function Home({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams;
-  const lang = (params.lang === 'th' ? 'th' : 'en') as 'en' | 'th';
+  const cookieStore = await cookies();
+  const lang = resolvePublicLocale(params.lang, cookieStore);
 
   await connectToDatabase();
 
@@ -75,22 +91,25 @@ export default async function Home({
   const profile = resolveLang(profileRaw, lang);
   const experiences = resolveLang(experiencesRaw, lang);
   const education = resolveLang(educationRaw, lang);
-  const skills = resolveLang(skillsRaw, lang);
-  const projects = resolveLang(projectsRaw, lang);
+  const skills = normalizeOrderedItems(resolveLang(skillsRaw, lang));
+  const projects = normalizeOrderedItems(resolveLang(projectsRaw, lang));
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground scroll-smooth">
-      <Header lang={lang} />
+      <PublicI18nProvider locale={lang}>
+        <Header lang={lang} />
 
-      <main className="flex-grow">
-        <Hero profile={profile} lang={lang} />
-        <Experience experiences={experiences} lang={lang} />
-        <Education education={education} lang={lang} />
-        <Skills skills={skills} lang={lang} />
-        <Projects projects={projects} lang={lang} />
-      </main>
+        <main className="flex-grow">
+          <Hero profile={profile} lang={lang} />
+          <CapabilityHighlights lang={lang} />
+          <Projects projects={projects} lang={lang} />
+          <Experience experiences={experiences} lang={lang} />
+          <Skills skills={skills} lang={lang} />
+          <Education education={education} lang={lang} />
+        </main>
 
-      <Footer lang={lang} />
+        <Footer lang={lang} />
+      </PublicI18nProvider>
     </div>
   );
 }

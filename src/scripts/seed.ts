@@ -62,6 +62,8 @@ const seedData = {
   skills: [
     {
       category: { en: 'Frontend Frameworks', th: 'ระบบหน้าบ้าน (Frontend)' },
+      order: 0,
+      enabled: true,
       items: [
         { en: 'React.js', th: 'React.js' },
         { en: 'Next.js', th: 'Next.js' },
@@ -72,6 +74,8 @@ const seedData = {
     },
     {
       category: { en: 'Backend Frameworks', th: 'ระบบหลังบ้าน (Backend)' },
+      order: 1,
+      enabled: true,
       items: [
         { en: 'Nest.js', th: 'Nest.js' },
         { en: 'Node.js', th: 'Node.js' },
@@ -79,6 +83,8 @@ const seedData = {
     },
     {
       category: { en: 'Programming Languages', th: 'ภาษาโปรแกรม' },
+      order: 2,
+      enabled: true,
       items: [
         { en: 'JavaScript', th: 'JavaScript' },
         { en: 'TypeScript', th: 'TypeScript' },
@@ -89,6 +95,8 @@ const seedData = {
     },
     {
       category: { en: 'Other Tools', th: 'เครื่องมืออื่นๆ' },
+      order: 3,
+      enabled: true,
       items: [
         { en: 'Git', th: 'Git' },
         { en: 'Docker', th: 'Docker' },
@@ -103,6 +111,8 @@ const seedData = {
     {
       title: { en: 'Mini Zoo Merge', th: 'เกมมือถือจับคู่สัตว์น่ารัก' },
       description: { en: 'A cute animals mobile game. Drop same animal to merge and get score.', th: 'เกมมือถือสัตว์น่ารัก ทิ้งสัตว์ชนิดเดียวกันให้รวมร่างกันเพื่อรับคะแนน' },
+      order: 0,
+      enabled: true,
       techStack: ['Unity', 'C#'],
       link: 'https://play.google.com/store/apps/details?id=com.tigongame.minizoomerge&hl=th',
       github: '#',
@@ -110,6 +120,8 @@ const seedData = {
     {
       title: { en: 'Poker Dices 3D', th: 'เต๋าโกหก' },
       description: { en: 'Dice game play with your friend enjoy in party.', th: 'เกมลูกเต๋าสำหรับเล่นสนุกกับเพื่อนๆ ในงานปาร์ตี้' },
+      order: 1,
+      enabled: true,
       techStack: ['Unity', 'C#'],
       link: 'https://play.google.com/store/apps/details?id=com.tigongame.pokerdices2&hl=th',
       github: '#',
@@ -117,6 +129,8 @@ const seedData = {
     {
       title: { en: 'Old CV with React js', th: 'CV แบบเดิม สร้างโดย React js' },
       description: { en: 'My personal portfolio and CV built using React.', th: 'เว็บไซต์เรซูเม่และพอร์ตโฟลิโอส่วนตัวที่สร้างด้วย React' },
+      order: 2,
+      enabled: true,
       techStack: ['React js', 'JavaScript', 'CSS'],
       link: 'https://tr-pong.github.io/ReactCV/',
       github: 'https://github.com/tr-pong/ReactCV',

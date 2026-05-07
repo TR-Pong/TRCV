@@ -17,7 +17,12 @@ export async function POST(req: NextRequest) {
     }
 
     const uploadResult = await saveCompressedProjectImage(file);
-    await removePreviousProjectImage(typeof previousImageUrl === 'string' ? previousImageUrl : null);
+
+    try {
+      await removePreviousProjectImage(typeof previousImageUrl === 'string' ? previousImageUrl : null);
+    } catch (cleanupError) {
+      console.error('Failed to remove previous project image:', cleanupError);
+    }
 
     return NextResponse.json({ url: uploadResult.url });
   } catch (error: unknown) {

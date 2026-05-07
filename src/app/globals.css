@@ -9,25 +9,30 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
-  /* Primary Accent Colors - Slightly deeper Blue for better contrast on light */
-  --color-primary: #1d4ed8; /* blue-700 */
-  --color-primary-hover: #1e40af; /* blue-800 */
+  --color-primary: #1c1c1c;
+  --color-primary-hover: rgba(28, 28, 28, 0.83);
   
   /* Secondary / Neutral lights for cards */
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
   --color-border: var(--border);
+  --color-elevated: var(--elevated);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-strong: var(--accent-strong);
 }
 
 @layer base {
   :root {
-    --background: #f7f7f3;
-    --foreground: #020617; /* Slate 950 for primary text - maximum contrast */
-    --muted: #f1f1eb;
-    --muted-foreground: #475569; /* Slate 600 for secondary text */
-    --surface: #ffffff;
-    --surface-hover: #f7f7f3;
-    --border: #e6e4dc;
+    --background: #f7f4ed;
+    --foreground: #1c1c1c;
+    --muted: rgba(28, 28, 28, 0.04);
+    --muted-foreground: #5f5f5d;
+    --surface: #f7f4ed;
+    --surface-hover: rgba(28, 28, 28, 0.03);
+    --border: #eceae4;
+    --elevated: rgba(252, 251, 248, 0.86);
+    --accent-soft: rgba(28, 28, 28, 0.04);
+    --accent-strong: rgba(28, 28, 28, 0.82);
   }
 
   /* Dark mode variables */
@@ -50,8 +55,9 @@
   body {
     @apply bg-background text-foreground font-inter antialiased transition-colors duration-300;
     background-image:
-      radial-gradient(circle at top, rgba(29, 78, 216, 0.06), transparent 32%),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72));
+      radial-gradient(circle at top left, rgba(219, 188, 133, 0.18), transparent 26%),
+      radial-gradient(circle at top right, rgba(198, 168, 207, 0.1), transparent 22%),
+      linear-gradient(to bottom, rgba(252, 251, 248, 0.72), rgba(247, 244, 237, 0.9));
   }
   
   h1, h2, h3, h4, h5, h6 {

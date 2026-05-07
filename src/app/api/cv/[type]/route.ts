@@ -8,6 +8,13 @@ import {
   ProjectModel 
 } from '@/models/CVData';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+function hasOrdering(type: string) {
+  return type === 'skill' || type === 'project';
+}
+
 const getModel = (type: string) => {
   switch (type) {
     case 'profile': return ProfileModel;
@@ -35,7 +42,10 @@ export async function GET(
       const data = await model.findOne().lean();
       return NextResponse.json(data);
     } else {
-      const data = await model.find().lean();
+      const query = hasOrdering(type)
+        ? model.find().sort({ order: 1, _id: 1 })
+        : model.find();
+      const data = await query.lean();
       return NextResponse.json(data);
     }
   } catch (error: unknown) {
@@ -56,6 +66,17 @@ export async function POST(
 
     const body = await req.json();
     await connectToDatabase();
+
+    if (hasOrdering(type)) {
+      if (typeof body.enabled !== 'boolean') {
+        body.enabled = true;
+      }
+
+      if (typeof body.order !== 'number') {
+        const lastItem = await model.findOne().sort({ order: -1, _id: -1 }).lean();
+        body.order = typeof lastItem?.order === 'number' ? lastItem.order + 1 : 0;
+      }
+    }
 
     const newItem = new model(body);
     await newItem.save();
@@ -112,6 +133,44 @@ export async function DELETE(
     await connectToDatabase();
     await model.findByIdAndDelete(id);
     
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ type: string }> }
+) {
+  try {
+    const { type } = await params;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const model = getModel(type) as any;
+    if (!model || !hasOrdering(type)) {
+      return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
+    }
+
+    const { items } = await req.json();
+    if (!Array.isArray(items)) {
+      return NextResponse.json({ error: 'Items array required' }, { status: 400 });
+    }
+
+    await connectToDatabase();
+
+    const updates = items
+      .filter((item) => item && typeof item.id === 'string' && typeof item.order === 'number')
+      .map((item) => ({ id: item.id, order: item.order }));
+
+    if (!updates.length) {
+      return NextResponse.json({ error: 'No valid reorder items provided' }, { status: 400 });
+    }
+
+    for (const item of updates) {
+      await model.findByIdAndUpdate(item.id, { $set: { order: item.order } });
+    }
+
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
