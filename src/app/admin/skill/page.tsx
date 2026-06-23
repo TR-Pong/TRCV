@@ -11,39 +11,19 @@ import { deleteSectionItem, fetchSectionData, reorderSectionItems, saveSectionIt
 import { createLocalizedField, createSkillItem } from '@/lib/admin/factories';
 import { notifyError, notifyInfo, notifySuccess } from '@/lib/admin/toast';
 import type { SkillFormData } from '@/lib/admin/types';
+import {
+  createOrderedItem,
+  moveOrderedItem,
+  normalizeOrderedItems,
+  toReorderPayload,
+} from '@/features/admin/shared/ordered-items';
 
 const primaryButtonClassName =
-  'inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60';
+  'admin-primary-button';
 const secondaryButtonClassName =
-  'inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50';
+  'admin-secondary-button';
 const dangerButtonClassName =
-  'inline-flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-3.5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100';
-
-function normalizeItems(items: SkillFormData[]) {
-  return [...items]
-    .map((item, index) => ({
-      ...item,
-      order: typeof item.order === 'number' ? item.order : index,
-      enabled: item.enabled ?? true,
-    }))
-    .sort((left, right) => left.order - right.order);
-}
-
-function getNextOrder(items: Array<{ order?: number }>) {
-  const maxOrder = items.reduce((currentMax, item) => {
-    return typeof item.order === 'number' ? Math.max(currentMax, item.order) : currentMax;
-  }, -1);
-
-  return maxOrder + 1;
-}
-
-function buildNewSkillItem(items: SkillFormData[]) {
-  return {
-    ...createSkillItem(),
-    order: getNextOrder(items),
-    enabled: true,
-  };
-}
+  'admin-danger-button';
 
 export default function AdminSkillPage() {
   const [items, setItems] = useState<SkillFormData[]>([]);
@@ -55,7 +35,7 @@ export default function AdminSkillPage() {
     setLoading(true);
     try {
       const nextItems = await fetchSectionData('skill');
-      setItems(normalizeItems(Array.isArray(nextItems) ? nextItems : []));
+      setItems(normalizeOrderedItems(Array.isArray(nextItems) ? nextItems : []));
     } catch {
       notifyError('Could not load skill groups');
     } finally {
@@ -68,7 +48,7 @@ export default function AdminSkillPage() {
   }, []);
 
   const startNew = () => {
-    setEditingItem(buildNewSkillItem(items));
+    setEditingItem(createOrderedItem(createSkillItem, items));
   };
 
   const startEdit = (item: SkillFormData) => {
@@ -109,18 +89,14 @@ export default function AdminSkillPage() {
   };
 
   const persistReorder = async (sourceIndex: number, targetIndex: number) => {
-    const reorderedItems = [...items];
-    const [movedItem] = reorderedItems.splice(sourceIndex, 1);
-    reorderedItems.splice(targetIndex, 0, movedItem);
-
-    const normalized = reorderedItems.map((item, index) => ({ ...item, order: index }));
+    const normalized = moveOrderedItem(items, sourceIndex, targetIndex);
 
     setItems(normalized);
 
     try {
       await reorderSectionItems(
         'skill',
-        normalized.filter((item) => item._id).map((item) => ({ id: item._id as string, order: item.order }))
+        toReorderPayload(normalized)
       );
       notifySuccess('Skill order updated');
       await loadItems();
@@ -163,16 +139,16 @@ export default function AdminSkillPage() {
       ) : items.length === 0 ? (
         <EmptyState title="No skill groups yet" description="Create your first category to organize portfolio skills." />
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="admin-surface overflow-hidden rounded-2xl">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+              <thead className="bg-indigo-50/60">
                 <tr>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Order</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Category</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Items</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Status</th>
-                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Actions</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-500">Order</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-500">Category</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-500">Items</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-500">Status</th>
+                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-500">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -187,7 +163,7 @@ export default function AdminSkillPage() {
                     <td className="px-4 py-4">
                       <span
                         className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                          item.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                          item.enabled ? 'admin-status-visible' : 'admin-status-hidden'
                         }`}
                       >
                         {item.enabled ? 'Visible' : 'Hidden'}
@@ -239,7 +215,7 @@ export default function AdminSkillPage() {
       >
         {editingItem ? (
           <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
+            <div className="admin-surface-soft flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3">
               <div className="text-sm text-slate-500">
                 Display status:{' '}
                 <span className="font-semibold text-slate-700">{editingItem.enabled ? 'Visible' : 'Hidden'}</span>
@@ -274,7 +250,7 @@ export default function AdminSkillPage() {
 
               <div className="space-y-3">
                 {editingItem.items.map((item, index) => (
-                  <div key={`${index}-${item.en}`} className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                  <div key={`${index}-${item.en}`} className="admin-surface-soft rounded-xl p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <div className="text-sm font-semibold text-slate-700">Skill {index + 1}</div>
                       <button
@@ -305,7 +281,7 @@ export default function AdminSkillPage() {
               </div>
             </FormCard>
 
-            <div className="flex justify-end">
+            <div className="admin-modal-actions flex justify-end">
               <button onClick={handleSave} disabled={saving} className={primaryButtonClassName}>
                 <FaSave size={14} />
                 {saving ? 'Saving...' : 'Save Group'}

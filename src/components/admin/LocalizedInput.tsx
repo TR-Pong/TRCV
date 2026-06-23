@@ -11,15 +11,14 @@ export function LocalizedInput({
   onChange: (next: LocalizedFieldValue) => void;
   isTextArea?: boolean;
 }) {
-  const commonClassName =
-    'w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-900 focus:bg-white';
+  const commonClassName = 'admin-input';
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
-      <div className="mb-4 text-sm font-semibold text-slate-700">{label}</div>
+    <fieldset className="admin-field-group p-4">
+      <legend className="px-1 text-sm font-semibold text-[var(--color-admin-ink)]">{label}</legend>
       <div className="grid gap-4 lg:grid-cols-2">
         <label className="block space-y-2">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">English</span>
+          <span className="admin-field-label">English</span>
           {isTextArea ? (
             <textarea
               className={`${commonClassName} min-h-[120px] resize-y`}
@@ -37,7 +36,7 @@ export function LocalizedInput({
         </label>
 
         <label className="block space-y-2">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Thai</span>
+          <span className="admin-field-label">Thai</span>
           {isTextArea ? (
             <textarea
               className={`${commonClassName} min-h-[120px] resize-y`}
@@ -54,6 +53,6 @@ export function LocalizedInput({
           )}
         </label>
       </div>
-    </div>
+    </fieldset>
   );
 }

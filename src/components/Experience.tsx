@@ -1,9 +1,6 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { IExperienceResolved } from '@/models/CVData';
 import SectionHeading from '@/components/SectionHeading';
+import { getPublicTranslation } from '@/lib/i18n/public-server';
 
 interface ExperienceProps {
   experiences: IExperienceResolved[];
@@ -11,56 +8,76 @@ interface ExperienceProps {
 }
 
 export default function Experience({ experiences, lang }: ExperienceProps) {
-  const { t } = useTranslation(['public']);
+  const t = (key: string) => getPublicTranslation(lang, key);
 
   return (
-    <section id="experience" className="py-24 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <SectionHeading
-          lang={lang}
-          eyebrow={t('public:experience.eyebrow')}
-          title={t('public:experience.title')}
-          description={t('public:experience.description')}
-        />
+    <section id="experience" className="public-section">
+      <div className="public-container">
+        <div className="grid gap-10 lg:grid-cols-[minmax(240px,0.5fr)_minmax(0,1.5fr)] lg:gap-16">
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <SectionHeading
+              lang={lang}
+              eyebrow={t('public.experience.eyebrow')}
+              title={t('public.experience.title')}
+              description={t('public.experience.description')}
+            />
+          </div>
 
-        <div className="mt-14 border-t border-border/70">
+        <div className="border-t public-rule">
           {experiences.map((exp, index) => (
-            <motion.article
+            <article
               key={`${exp.company}-${index}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.45, delay: index * 0.06 }}
-              className="border-b border-border/70 py-8 md:py-10"
+              className="border-b public-rule py-8 md:py-10"
             >
-              <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,0.8fr)_minmax(0,1.2fr)]">
-                <div>
-                  <div className={`text-xs font-semibold text-primary/80 ${lang === 'th' ? 'tracking-[0.03em]' : 'uppercase tracking-[0.22em]'}`}>
+              <div className="grid gap-7 md:grid-cols-[160px_minmax(0,1fr)]">
+                <div className="md:pt-1">
+                  <div className={`text-sm font-semibold text-primary/80 ${lang === 'th' ? 'tracking-normal' : 'tracking-[0.02em]'}`}>
                     {exp.period}
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-2xl font-outfit font-semibold text-foreground md:text-[2rem]">{exp.title}</h3>
-                  <p className="mt-3 text-base text-muted-foreground">{exp.company}</p>
-                </div>
-
-                <div>
-                  <div className={`text-[11px] font-semibold text-primary/80 ${lang === 'th' ? 'tracking-[0.03em]' : 'uppercase tracking-[0.2em]'}`}>
-                    {t('public:experience.outcomeLabel')}
+                <div className="min-w-0">
+                  <h3 className="break-words text-2xl font-display font-bold text-foreground md:text-[2rem]">{exp.title}</h3>
+                  <p className="mt-3 break-words text-base text-muted-foreground">{exp.company}</p>
+                  <div className={`mt-7 text-sm font-semibold text-primary/80 ${lang === 'th' ? 'tracking-normal' : 'tracking-[0.02em]'}`}>
+                    {t('public.experience.outcomeLabel')}
                   </div>
-                  <ul className="mt-4 grid gap-3 text-sm leading-7 text-muted-foreground md:text-base">
-                    {exp.description.map((item, itemIndex) => (
+                  <ul className="mt-4 grid gap-3 text-base leading-7 text-muted-foreground">
+                    {exp.description.slice(0, 3).map((item, itemIndex) => (
                       <li key={itemIndex} className="flex gap-3">
                         <span className="mt-[11px] h-px w-5 shrink-0 bg-primary/55" />
                         <span>{item}</span>
                       </li>
                     ))}
                   </ul>
+                  {exp.description.length > 3 ? (
+                    <>
+                      <details className="public-disclosure mt-4 md:hidden">
+                        <summary>{t('public.experience.outcomeLabel')}</summary>
+                        <ul className="mt-4 grid gap-3 text-base leading-7 text-muted-foreground">
+                          {exp.description.slice(3).map((item, itemIndex) => (
+                            <li key={itemIndex} className="flex gap-3">
+                              <span className="mt-[11px] h-px w-5 shrink-0 bg-primary/55" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                      <ul className="mt-3 hidden gap-3 text-base leading-7 text-muted-foreground md:grid">
+                        {exp.description.slice(3).map((item, itemIndex) => (
+                          <li key={itemIndex} className="flex gap-3">
+                            <span className="mt-[11px] h-px w-5 shrink-0 bg-primary/55" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
                 </div>
               </div>
-            </motion.article>
+            </article>
           ))}
+        </div>
         </div>
       </div>
     </section>

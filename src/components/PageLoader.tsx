@@ -18,14 +18,14 @@ export default function PageLoader({
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center gap-5 rounded-[32px] border border-border bg-white/88 px-8 py-7 text-center shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur"
+        className="flex flex-col items-center gap-5 rounded-2xl border border-border bg-[var(--color-header-overlay)] px-8 py-7 text-center backdrop-blur"
       >
         <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-slate-950" />
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-slate-400 [animation-delay:120ms]" />
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-slate-300 [animation-delay:240ms]" />
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-primary" />
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-primary/45 [animation-delay:120ms]" />
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-primary/25 [animation-delay:240ms]" />
         </div>
-        <div className="text-sm font-medium tracking-[0.12em] text-muted-foreground uppercase">{label}</div>
+        <div className="text-sm font-medium text-muted-foreground">{label}</div>
       </motion.div>
     </div>
   );

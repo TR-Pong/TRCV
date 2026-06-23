@@ -1,5 +1,6 @@
 import {
   defaultPublicLocale,
+  isPublicLocale,
   LANGUAGE_COOKIE_KEY,
   publicResources,
   type PublicLocale,
@@ -9,21 +10,17 @@ type CookieReader = {
   get(name: string): { value: string } | undefined;
 };
 
-function isSupportedLocale(value: string | undefined): value is PublicLocale {
-  return value === 'en' || value === 'th';
-}
-
 export function resolvePublicLocale(
   queryLang?: string | string[],
   cookieStore?: CookieReader
 ): PublicLocale {
   const queryValue = Array.isArray(queryLang) ? queryLang[0] : queryLang;
-  if (isSupportedLocale(queryValue)) {
+  if (isPublicLocale(queryValue)) {
     return queryValue;
   }
 
   const cookieValue = cookieStore?.get(LANGUAGE_COOKIE_KEY)?.value;
-  if (isSupportedLocale(cookieValue)) {
+  if (isPublicLocale(cookieValue)) {
     return cookieValue;
   }
 

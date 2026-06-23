@@ -1,16 +1,17 @@
 export function LoadingState({ label }: { label: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center text-sm font-medium text-slate-500">
-      {label}
+    <div className="admin-empty-state px-6 py-14 text-center">
+      <div className="mx-auto mb-4 h-1 w-12 bg-[var(--color-admin-accent)]" />
+      <div className="text-sm font-medium text-[var(--color-admin-muted)]">{label}</div>
     </div>
   );
 }
 
 export function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
-      <div className="text-lg font-outfit font-semibold text-slate-900">{title}</div>
-      <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+    <div className="admin-empty-state px-6 py-14 text-center">
+      <div className="text-lg font-display font-bold text-[var(--color-admin-ink)]">{title}</div>
+      <p className="mt-2 text-sm leading-6 text-[var(--color-admin-muted)]">{description}</p>
     </div>
   );
 }

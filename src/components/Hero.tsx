@@ -20,19 +20,20 @@ export default function Hero({ profile, lang }: HeroProps) {
   ];
 
   return (
-    <section id="home" className="relative overflow-hidden pt-28 md:pt-36">
-      <div className="absolute inset-x-0 top-0 -z-10 h-[660px] bg-[radial-gradient(circle_at_top_right,rgba(214,177,123,0.22),transparent_30%),radial-gradient(circle_at_top_left,rgba(193,167,206,0.12),transparent_28%)]" />
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <div className="grid gap-16 border-b border-border/80 pb-24 md:grid-cols-[minmax(0,1.18fr)_minmax(300px,0.82fr)] md:items-start md:pb-32">
-          <div className="max-w-4xl md:pt-8">
+    <section id="home" className="public-hero relative">
+      <div className="public-container">
+        <div className="border-b public-rule pb-14 md:pb-20">
+          <div className="grid min-w-0 gap-10 md:grid-cols-[minmax(0,1.25fr)_minmax(240px,0.75fr)] md:items-end md:gap-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.55fr)] lg:gap-12">
+          <div className="min-w-0">
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45 }}
-              className={`inline-flex rounded-full border border-border bg-[rgba(252,251,248,0.85)] px-4 py-2 text-[11px] font-semibold text-primary backdrop-blur ${
-                lang === 'th' ? 'tracking-[0.03em]' : 'uppercase tracking-[0.22em]'
+              className={`inline-flex items-center gap-2 text-sm font-semibold text-[var(--signal)] ${
+                lang === 'th' ? 'tracking-[0.02em]' : 'tracking-[0.08em]'
               }`}
             >
+              <span className="h-2 w-2 rounded-full bg-[var(--signal)]" />
               {t('public:hero.eyebrow')}
             </motion.div>
 
@@ -40,8 +41,8 @@ export default function Hero({ profile, lang }: HeroProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.06 }}
-              className={`mt-8 text-sm font-medium text-primary/80 ${
-                lang === 'th' ? 'tracking-[0.02em]' : 'uppercase tracking-[0.22em]'
+              className={`mt-8 text-sm font-semibold text-foreground/60 ${
+                lang === 'th' ? 'tracking-[0.01em]' : 'tracking-[0.08em]'
               }`}
             >
               {t('public:hero.strapline')}
@@ -51,8 +52,10 @@ export default function Hero({ profile, lang }: HeroProps) {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className={`mt-5 max-w-4xl text-5xl font-outfit font-semibold leading-[0.97] text-foreground md:text-7xl ${
-                lang === 'th' ? 'tracking-normal' : 'tracking-[-0.04em]'
+              className={`mt-4 max-w-[13ch] text-[clamp(3.25rem,8vw,6.8rem)] font-display font-bold text-foreground ${
+                lang === 'th'
+                  ? 'font-thai leading-[1.08] tracking-normal'
+                  : 'leading-[0.88] tracking-[-0.04em]'
               }`}
             >
               {profile.name}
@@ -62,7 +65,7 @@ export default function Hero({ profile, lang }: HeroProps) {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.16 }}
-              className="mt-7 max-w-[46rem] text-lg leading-9 text-foreground/80 md:text-[1.65rem] md:leading-10"
+              className="mt-7 max-w-[34ch] text-xl leading-8 text-foreground/85 md:text-3xl md:leading-10"
             >
               {profile.role}
             </motion.p>
@@ -71,7 +74,7 @@ export default function Hero({ profile, lang }: HeroProps) {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.22 }}
-              className="mt-8 max-w-[42rem] text-base leading-8 text-muted-foreground md:text-lg"
+              className="mt-6 max-w-[62ch] text-base leading-8 text-muted-foreground md:text-lg"
             >
               {profile.bio}
             </motion.p>
@@ -80,12 +83,11 @@ export default function Hero({ profile, lang }: HeroProps) {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.28 }}
-              className="mt-12 grid gap-3 text-sm text-foreground/80 md:max-w-2xl md:text-base"
+              className="mt-8 grid max-w-3xl gap-0 border-y border-border text-sm text-foreground/80 sm:grid-cols-3 md:mt-10"
             >
               {highlights.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <span className="mt-2 h-2 w-2 rounded-full bg-primary shadow-[0_0_0_6px_rgba(29,78,216,0.12)]" />
-                  <span>{item}</span>
+                <li key={item} className="flex min-w-0 items-start border-b border-border py-4 last:border-b-0 sm:border-b-0 sm:border-r sm:px-4 sm:first:pl-0 sm:last:border-r-0">
+                  <span className="min-w-0 break-words leading-6">{item}</span>
                 </li>
               ))}
             </motion.ul>
@@ -94,52 +96,50 @@ export default function Hero({ profile, lang }: HeroProps) {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.34 }}
-              className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center"
+              className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
               <a
                 href="#portfolio"
-                className="inline-flex items-center justify-center gap-3 rounded-md bg-primary px-6 py-4 text-sm font-semibold text-[#fcfbf8] shadow-[rgba(255,255,255,0.2)_0px_0.5px_0px_0px_inset,rgba(0,0,0,0.2)_0px_0px_0px_0.5px_inset,rgba(0,0,0,0.05)_0px_1px_2px_0px] transition hover:-translate-y-0.5 hover:opacity-80"
+                className="public-primary-action focus-ring inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-md px-6 py-3.5 text-sm font-semibold transition-[opacity,transform] hover:-translate-y-0.5 hover:opacity-80 md:py-4"
               >
                 <span>{t('public:hero.primaryCta')}</span>
-                <FaArrowRight size={12} />
+                <FaArrowRight size={12} aria-hidden="true" focusable="false" />
               </a>
               <a
                 href="./Tanakhom CV.pdf"
                 target="_blank"
-                className="inline-flex items-center justify-center gap-3 rounded-md border border-[rgba(28,28,28,0.4)] bg-transparent px-6 py-4 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:opacity-80"
+                className="public-secondary-action focus-ring inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-md bg-transparent px-6 py-3.5 text-sm font-semibold text-foreground transition-[opacity,transform] hover:-translate-y-0.5 hover:opacity-80 md:py-4"
               >
                 <span>{t('public:hero.secondaryCta')}</span>
-                <FaFileDownload size={13} />
+                <FaFileDownload size={13} aria-hidden="true" focusable="false" />
               </a>
             </motion.div>
           </div>
 
-          <motion.div
+          <motion.aside
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="grid gap-8 md:pt-0"
+            className="mx-auto min-w-0 w-full max-w-[15rem] sm:max-w-[18rem] md:mx-0 md:max-w-[20rem] md:justify-self-end lg:max-w-none"
           >
-            <div className="md:translate-y-10">
-              <div className="bg-[rgba(252,251,248,0.58)] p-4 backdrop-blur">
-                <div className="overflow-hidden rounded-[28px] border border-border/60 bg-[linear-gradient(180deg,rgba(2,6,23,0.02),rgba(2,6,23,0.08))]">
+            <div className="border border-border bg-surface p-2">
+                <div className="relative overflow-hidden">
                   <Image
                     src="/img/profile.JPG"
                     alt={profile.name}
                     width={720}
                     height={900}
                     priority
-                    className="h-[360px] w-full object-cover object-center md:h-[430px]"
+                    className="aspect-[4/5] h-auto w-full object-cover object-center"
                   />
                 </div>
-              </div>
             </div>
-            <div className="grid gap-6 md:pl-8">
-              <div className="grid gap-5 border-t border-border/55 pt-5 md:grid-cols-2">
+            <div className="mt-4 grid gap-4 border-t border-border pt-4 md:mt-5 md:gap-5 md:pt-5">
+              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1">
                 <div>
                   <div
-                    className={`text-[11px] font-semibold text-primary/80 ${
-                      lang === 'th' ? 'tracking-[0.02em]' : 'uppercase tracking-[0.2em]'
+                    className={`text-xs font-semibold text-primary/80 ${
+                      lang === 'th' ? 'tracking-[0.01em]' : 'tracking-[0.08em]'
                     }`}
                   >
                     {t('public:hero.location')}
@@ -148,8 +148,8 @@ export default function Hero({ profile, lang }: HeroProps) {
                 </div>
                 <div>
                   <div
-                    className={`text-[11px] font-semibold text-primary/80 ${
-                      lang === 'th' ? 'tracking-[0.02em]' : 'uppercase tracking-[0.2em]'
+                    className={`text-xs font-semibold text-primary/80 ${
+                      lang === 'th' ? 'tracking-[0.01em]' : 'tracking-[0.08em]'
                     }`}
                   >
                     {t('public:hero.email')}
@@ -158,10 +158,10 @@ export default function Hero({ profile, lang }: HeroProps) {
                 </div>
               </div>
 
-              <div className="max-w-sm border-l border-primary/25 pl-5">
+              <div className="hidden max-w-sm border-t border-border pt-5 lg:block">
                 <div
-                  className={`text-[11px] font-semibold text-primary/80 ${
-                    lang === 'th' ? 'tracking-[0.02em]' : 'uppercase tracking-[0.22em]'
+                  className={`text-xs font-semibold text-primary/80 ${
+                    lang === 'th' ? 'tracking-[0.01em]' : 'tracking-[0.08em]'
                   }`}
                 >
                   {t('public:hero.statementTitle')}
@@ -171,7 +171,8 @@ export default function Hero({ profile, lang }: HeroProps) {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </motion.aside>
+          </div>
         </div>
       </div>
     </section>

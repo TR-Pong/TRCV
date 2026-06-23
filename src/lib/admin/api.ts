@@ -7,24 +7,13 @@ import type {
   CollectionSection,
   ProfileFormData,
 } from '@/lib/admin/types';
-
-function redirectToLogin() {
-  window.location.href = '/admin/login';
-}
+import { adminApiRequest } from '@/features/admin/shared/http';
 
 export async function fetchSectionData<T extends AdminSection>(section: T): Promise<AdminEntityMap[T]> {
-  const response = await fetch(`/api/cv/${section}`, { cache: 'no-store' });
-
-  if (response.status === 401) {
-    redirectToLogin();
-    throw new Error('Unauthorized');
-  }
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${section}`);
-  }
-
-  return response.json() as Promise<AdminEntityMap[T]>;
+  return adminApiRequest<AdminEntityMap[T]>(`/api/cv/${section}`, {
+    cache: 'no-store',
+    fallbackError: `Failed to fetch ${section}`,
+  });
 }
 
 export async function saveSectionItem(section: 'profile', payload: ProfileFormData): Promise<void>;
@@ -46,57 +35,33 @@ export async function saveSectionItem(
         return method === 'PUT' ? { ...rest, id: _id } : rest;
       })();
 
-  const response = await fetch(`/api/cv/${section}`, {
+  await adminApiRequest(`/api/cv/${section}`, {
     method,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+    fallbackError: `Failed to save ${section}`,
   });
-
-  if (response.status === 401) {
-    redirectToLogin();
-    throw new Error('Unauthorized');
-  }
-
-  if (!response.ok) {
-    throw new Error(`Failed to save ${section}`);
-  }
 }
 
 export async function deleteSectionItem(section: CollectionSection, id: string): Promise<void> {
-  const response = await fetch(`/api/cv/${section}`, {
+  await adminApiRequest(`/api/cv/${section}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id }),
+    fallbackError: `Failed to delete ${section}`,
   });
-
-  if (response.status === 401) {
-    redirectToLogin();
-    throw new Error('Unauthorized');
-  }
-
-  if (!response.ok) {
-    throw new Error(`Failed to delete ${section}`);
-  }
 }
 
 export async function reorderSectionItems(
   section: Extract<CollectionSection, 'skill' | 'project'>,
   items: Array<{ id: string; order: number }>
 ): Promise<void> {
-  const response = await fetch(`/api/cv/${section}`, {
+  await adminApiRequest(`/api/cv/${section}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ items }),
+    fallbackError: `Failed to reorder ${section}`,
   });
-
-  if (response.status === 401) {
-    redirectToLogin();
-    throw new Error('Unauthorized');
-  }
-
-  if (!response.ok) {
-    throw new Error(`Failed to reorder ${section}`);
-  }
 }
 
 export async function uploadProjectImage(file: File, previousImageUrl?: string): Promise<string> {
@@ -107,21 +72,11 @@ export async function uploadProjectImage(file: File, previousImageUrl?: string):
     formData.append('previousImageUrl', previousImageUrl);
   }
 
-  const response = await fetch('/api/upload/project-image', {
+  const data = await adminApiRequest<{ url: string }>('/api/upload/project-image', {
     method: 'POST',
     body: formData,
+    fallbackError: 'Failed to upload project image',
   });
-
-  if (response.status === 401) {
-    redirectToLogin();
-    throw new Error('Unauthorized');
-  }
-
-  const data = (await response.json()) as { url?: string; error?: string };
-
-  if (!response.ok || !data.url) {
-    throw new Error(data.error || 'Failed to upload project image');
-  }
 
   return data.url;
 }

@@ -12,6 +12,13 @@
 
 # testing
 /coverage
+/public/screenshots
+
+# local agent tooling
+/.agents
+/.codex
+/.hallmark
+/.impeccable
 
 # next.js
 /.next/

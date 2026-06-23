@@ -1,9 +1,6 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { ISkillResolved } from '@/models/CVData';
 import SectionHeading from '@/components/SectionHeading';
+import { getPublicTranslation } from '@/lib/i18n/public-server';
 
 interface SkillsProps {
   skills: ISkillResolved[];
@@ -11,41 +8,36 @@ interface SkillsProps {
 }
 
 export default function Skills({ skills, lang }: SkillsProps) {
-  const { t } = useTranslation(['public']);
+  const t = (key: string) => getPublicTranslation(lang, key);
 
   return (
-    <section id="skills" className="py-24 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
+    <section id="skills" className="public-section">
+      <div className="public-container">
         <SectionHeading
           lang={lang}
-          eyebrow={t('public:skills.eyebrow')}
-          title={t('public:skills.title')}
-          description={t('public:skills.description')}
+          eyebrow={t('public.skills.eyebrow')}
+          title={t('public.skills.title')}
+          description={t('public.skills.description')}
         />
 
-        <div className="mt-14 grid gap-10 border-t border-border/70 pt-8 lg:grid-cols-3">
+        <div className="mt-12 border-t public-rule">
           {skills.map((skillGroup, index) => (
-            <motion.article
+            <article
               key={`${skillGroup.category}-${index}`}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.45, delay: index * 0.06 }}
-              className="border-l border-border/80 pl-5 md:pl-6"
+              className="grid gap-5 border-b public-rule py-7 md:grid-cols-[minmax(200px,0.55fr)_minmax(0,1.45fr)] md:items-start"
             >
-              <div className="h-px w-12 bg-[linear-gradient(90deg,rgba(29,78,216,0.9),rgba(15,23,42,0.25))]" />
-              <h3 className="mt-5 text-2xl font-outfit font-semibold text-foreground">{skillGroup.category}</h3>
-              <div className="mt-5 flex flex-wrap gap-3">
+              <h3 className="text-2xl font-display font-bold text-foreground">{skillGroup.category}</h3>
+              <div className="flex flex-wrap gap-x-5 gap-y-3">
                 {skillGroup.items.map((item, itemIndex) => (
                   <span
                     key={`${item}-${itemIndex}`}
-                    className="rounded-full bg-muted/80 px-4 py-2 text-sm text-muted-foreground"
+                    className="border-b border-[var(--signal)] pb-1 text-sm font-medium text-foreground/75"
                   >
                     {item}
                   </span>
                 ))}
               </div>
-            </motion.article>
+            </article>
           ))}
         </div>
       </div>

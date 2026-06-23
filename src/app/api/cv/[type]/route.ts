@@ -167,9 +167,14 @@ export async function PATCH(
       return NextResponse.json({ error: 'No valid reorder items provided' }, { status: 400 });
     }
 
-    for (const item of updates) {
-      await model.findByIdAndUpdate(item.id, { $set: { order: item.order } });
-    }
+    await model.bulkWrite(
+      updates.map((item) => ({
+        updateOne: {
+          filter: { _id: item.id },
+          update: { $set: { order: item.order } },
+        },
+      }))
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

@@ -14,6 +14,13 @@ export const publicResources = {
         experience: 'Experience',
         skills: 'Skills',
         education: 'Education',
+        switchLanguage: 'Switch language to {{language}}',
+        englishLanguage: 'English',
+        thaiLanguage: 'Thai',
+        openMenu: 'Open navigation menu',
+        closeMenu: 'Close navigation menu',
+        contactLabel: 'Email Tanakhom Rattanasrisawat',
+        skipToContent: 'Skip to content',
       },
       hero: {
         eyebrow: 'Available for product, web, and interactive work',
@@ -81,6 +88,10 @@ export const publicResources = {
         description:
           'If you are building a digital product and want a developer who cares about quality and real user experience, I would be glad to talk.',
         contact: 'Start a Conversation',
+        socialGroupLabel: 'Social and contact links',
+        githubLabel: 'Open GitHub profile',
+        linkedinLabel: 'Open LinkedIn profile',
+        emailLabel: 'Email Tanakhom Rattanasrisawat',
         rights: 'All rights reserved.',
         builtWith: 'Built with',
       },
@@ -99,6 +110,13 @@ export const publicResources = {
         experience: 'ประสบการณ์',
         skills: 'ทักษะ',
         education: 'การศึกษา',
+        switchLanguage: 'เปลี่ยนภาษาเป็น{{language}}',
+        englishLanguage: 'อังกฤษ',
+        thaiLanguage: 'ไทย',
+        openMenu: 'เปิดเมนูนำทาง',
+        closeMenu: 'ปิดเมนูนำทาง',
+        contactLabel: 'ส่งอีเมลถึง Tanakhom Rattanasrisawat',
+        skipToContent: 'ข้ามไปยังเนื้อหา',
       },
       hero: {
         eyebrow: 'พร้อมสำหรับงาน product, web และ interactive',
@@ -167,6 +185,10 @@ export const publicResources = {
         description:
           'หากคุณกำลังสร้าง digital product และต้องการ developer ที่ให้ความสำคัญกับ คุณภาพและประสบการณ์ผู้ใช้ ผมยินดีที่จะได้พูดคุย',
         contact: 'เริ่มพูดคุย',
+        socialGroupLabel: 'ลิงก์โซเชียลและการติดต่อ',
+        githubLabel: 'เปิดโปรไฟล์ GitHub',
+        linkedinLabel: 'เปิดโปรไฟล์ LinkedIn',
+        emailLabel: 'ส่งอีเมลถึง Tanakhom Rattanasrisawat',
         rights: 'สงวนลิขสิทธิ์',
         builtWith: 'สร้างด้วย',
       },
@@ -177,3 +199,7 @@ export const publicResources = {
 export type PublicLocale = keyof typeof publicResources;
 
 export const defaultPublicLocale: PublicLocale = 'en';
+
+export function isPublicLocale(value: string | undefined): value is PublicLocale {
+  return value === 'en' || value === 'th';
+}

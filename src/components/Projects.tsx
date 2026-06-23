@@ -1,11 +1,8 @@
-'use client';
-
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
-import { useTranslation } from 'react-i18next';
 import { IProjectResolved } from '@/models/CVData';
 import SectionHeading from '@/components/SectionHeading';
+import { getPublicTranslation } from '@/lib/i18n/public-server';
 
 interface ProjectsProps {
   projects: IProjectResolved[];
@@ -24,15 +21,15 @@ function ProjectLinks({
   githubLabel: string;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-5 border-t border-border/80 pt-6">
+    <div className="flex flex-wrap items-center gap-3 border-t border-border/80 pt-6 sm:gap-5">
       {github && github !== '#' ? (
         <a
           href={github}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+          className="focus-ring inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-foreground/72 transition hover:text-foreground"
         >
-          <FaGithub size={16} />
+          <FaGithub size={16} aria-hidden="true" focusable="false" />
           <span>{githubLabel}</span>
         </a>
       ) : null}
@@ -41,9 +38,9 @@ function ProjectLinks({
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+          className="focus-ring inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-foreground/72 transition hover:text-foreground"
         >
-          <FaExternalLinkAlt size={14} />
+          <FaExternalLinkAlt size={14} aria-hidden="true" focusable="false" />
           <span>{visitLabel}</span>
         </a>
       ) : null}
@@ -52,29 +49,23 @@ function ProjectLinks({
 }
 
 export default function Projects({ projects, lang }: ProjectsProps) {
-  const { t } = useTranslation(['common', 'public']);
+  const t = (key: string) => getPublicTranslation(lang, key);
   const [featuredProject, ...secondaryProjects] = projects;
 
   return (
-    <section id="portfolio" className="border-y border-border/70 bg-[linear-gradient(180deg,rgba(252,251,248,0.75),rgba(247,244,237,0.95))] py-24 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
+    <section id="portfolio" className="public-dark-section scroll-mt-20">
+      <div className="public-container py-14 md:py-24">
         <SectionHeading
           lang={lang}
-          eyebrow={t('public:projects.eyebrow')}
-          title={t('public:projects.title')}
-          description={t('public:projects.description')}
+          eyebrow={t('public.projects.eyebrow')}
+          title={t('public.projects.title')}
+          description={t('public.projects.description')}
         />
 
         {featuredProject ? (
-          <motion.article
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.45 }}
-            className="mt-14 overflow-hidden rounded-2xl border border-border bg-surface shadow-none md:-mr-8"
-          >
-            <div className="grid lg:grid-cols-[minmax(0,1.26fr)_minmax(320px,0.74fr)]">
-              <div className="relative aspect-[594/241] border-b border-border/70 bg-muted/50 lg:aspect-auto lg:min-h-[420px] lg:border-b-0 lg:border-r">
+          <article className="mt-10 border-t border-[var(--color-dark-rule)] pt-6 md:mt-14 md:pt-8">
+            <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)] lg:items-end">
+              <div className="relative aspect-[594/241] min-w-0 overflow-hidden bg-[var(--color-dark-surface)]">
                 {featuredProject.imageUrl ? (
                   <Image
                     src={featuredProject.imageUrl}
@@ -87,32 +78,32 @@ export default function Projects({ projects, lang }: ProjectsProps) {
                 ) : (
                   <div className="flex h-full items-center justify-center px-8 text-center">
                     <div>
-                      <div className={`text-xs font-semibold text-primary/80 ${lang === 'th' ? 'tracking-[0.03em]' : 'uppercase tracking-[0.22em]'}`}>
-                        {t('public:projects.featuredLabel')}
+                      <div className={`text-sm font-semibold text-[var(--color-dark-muted)] ${lang === 'th' ? 'tracking-normal' : 'tracking-[0.02em]'}`}>
+                        {t('public.projects.featuredLabel')}
                       </div>
-                      <div className="mt-4 text-3xl font-outfit font-semibold text-slate-400">{featuredProject.title}</div>
+                      <div className="mt-4 text-3xl font-display font-bold text-[var(--color-dark-muted)]">{featuredProject.title}</div>
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-col justify-between p-7 md:p-10 lg:pl-8">
+              <div className="flex min-w-0 flex-col justify-between">
                 <div>
-                  <div className={`text-xs font-semibold text-primary/80 ${lang === 'th' ? 'tracking-[0.03em]' : 'uppercase tracking-[0.22em]'}`}>
-                    {t('public:projects.featuredLabel')}
+                  <div className={`text-sm font-semibold text-[var(--color-dark-muted)] ${lang === 'th' ? 'tracking-normal' : 'tracking-[0.02em]'}`}>
+                    {t('public.projects.featuredLabel')}
                   </div>
-                  <h3 className="mt-5 text-3xl font-outfit font-semibold text-foreground md:text-4xl">
+                  <h3 className="mt-4 text-4xl font-display font-bold text-[var(--color-on-dark)] md:text-5xl">
                     {featuredProject.title}
                   </h3>
-                  <p className="mt-6 text-sm leading-8 text-muted-foreground md:text-base">
+                  <p className="mt-5 text-base leading-7 text-[var(--color-dark-muted)] md:mt-6 md:leading-8">
                     {featuredProject.description}
                   </p>
 
-                  <div className="mt-8 flex flex-wrap gap-2.5">
-                    {featuredProject.techStack.map((tech, techIndex) => (
+                  <div className="mt-6 flex flex-wrap gap-2.5 md:mt-8">
+                    {featuredProject.techStack.slice(0, 6).map((tech, techIndex) => (
                       <span
                         key={`${tech}-${techIndex}`}
-                        className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-foreground/80"
+                        className="rounded-full border border-[var(--color-dark-rule)] px-3 py-1.5 text-xs font-medium text-[var(--color-on-dark)]"
                       >
                         {tech}
                       </span>
@@ -120,35 +111,31 @@ export default function Projects({ projects, lang }: ProjectsProps) {
                   </div>
                 </div>
 
-                <div className="mt-10">
+                <div className="public-dark-links mt-8">
                   <ProjectLinks
                     github={featuredProject.github}
                     link={featuredProject.link}
-                    visitLabel={t('public:projects.visit')}
-                    githubLabel={t('common:github')}
+                    visitLabel={t('public.projects.visit')}
+                    githubLabel={t('common.github')}
                   />
                 </div>
               </div>
             </div>
-          </motion.article>
+          </article>
         ) : null}
 
         {secondaryProjects.length > 0 ? (
-          <div className="mt-16 md:pl-20">
-            <div className={`text-sm font-semibold text-primary/80 ${lang === 'th' ? 'tracking-[0.03em]' : 'uppercase tracking-[0.2em]'}`}>
-              {t('public:projects.secondaryLabel')}
+          <div className="mt-14 md:mt-20">
+            <div className={`text-sm font-semibold text-[var(--color-dark-muted)] ${lang === 'th' ? 'tracking-normal' : 'tracking-[0.02em]'}`}>
+              {t('public.projects.secondaryLabel')}
             </div>
-            <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
+            <div className="mt-5 border-t border-[var(--color-dark-rule)]">
               {secondaryProjects.map((project, index) => (
-                <motion.article
+                <article
                   key={`${project.title}-${index}`}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.45, delay: index * 0.06 }}
-                  className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-none"
+                  className="grid min-w-0 gap-5 border-b border-[var(--color-dark-rule)] py-7 md:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] md:items-center md:gap-8 lg:grid-cols-[minmax(0,0.45fr)_minmax(0,0.9fr)_minmax(190px,0.65fr)]"
                 >
-                  <div className="relative aspect-[594/241] border-b border-border/70 bg-muted/50">
+                  <div className="relative aspect-[594/241] min-w-0 overflow-hidden bg-[var(--color-dark-surface)]">
                     {project.imageUrl ? (
                       <Image
                         src={project.imageUrl}
@@ -159,39 +146,39 @@ export default function Projects({ projects, lang }: ProjectsProps) {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center px-6 text-center text-slate-400">
-                        <div className="text-2xl font-outfit font-semibold">{project.title}</div>
+                      <div className="flex h-full items-center justify-center px-6 text-center text-[var(--color-dark-muted)]">
+                        <div className="text-2xl font-display font-bold">{project.title}</div>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex h-full flex-col p-6 md:p-7">
-                    <h3 className="text-2xl font-outfit font-semibold text-foreground">{project.title}</h3>
-                    <p className="mt-4 flex-grow text-sm leading-7 text-muted-foreground md:text-base">
+                  <div className="min-w-0">
+                    <h3 className="text-2xl font-display font-bold text-[var(--color-on-dark)] md:text-3xl">{project.title}</h3>
+                    <p className="mt-3 text-base leading-7 text-[var(--color-dark-muted)]">
                       {project.description}
                     </p>
 
-                    <div className="mt-6 flex flex-wrap gap-2">
-                      {project.techStack.map((tech, techIndex) => (
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {project.techStack.slice(0, 4).map((tech, techIndex) => (
                         <span
                           key={`${tech}-${techIndex}`}
-                          className="rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-foreground/80"
+                          className="rounded-full border border-[var(--color-dark-rule)] px-3 py-1.5 text-xs font-medium text-[var(--color-on-dark)]"
                         >
                           {tech}
                         </span>
                       ))}
                     </div>
 
-                    <div className="mt-8">
+                  </div>
+                    <div className="public-dark-links md:col-start-2 lg:col-start-auto lg:justify-self-end">
                       <ProjectLinks
                         github={project.github}
                         link={project.link}
-                        visitLabel={t('public:projects.visit')}
-                        githubLabel={t('common:github')}
+                        visitLabel={t('public.projects.visit')}
+                        githubLabel={t('common.github')}
                       />
                     </div>
-                  </div>
-                </motion.article>
+                </article>
               ))}
             </div>
           </div>

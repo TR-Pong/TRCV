@@ -58,7 +58,7 @@ export default function AdminProfilePage() {
           <button
             onClick={handleSave}
             disabled={!data || saving}
-            className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="admin-primary-button"
           >
             <FaSave size={14} />
             {saving ? 'Saving...' : 'Save Profile'}
@@ -91,7 +91,7 @@ export default function AdminProfilePage() {
               <label className="space-y-2">
                 <span className="text-sm font-semibold text-slate-700">Email</span>
                 <input
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
+                  className="admin-input"
                   value={data.email}
                   onChange={(event) => setData({ ...data, email: event.target.value })}
                 />
@@ -99,7 +99,7 @@ export default function AdminProfilePage() {
               <label className="space-y-2">
                 <span className="text-sm font-semibold text-slate-700">Phone</span>
                 <input
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
+                  className="admin-input"
                   value={data.phone}
                   onChange={(event) => setData({ ...data, phone: event.target.value })}
                 />
@@ -107,7 +107,7 @@ export default function AdminProfilePage() {
               <label className="space-y-2">
                 <span className="text-sm font-semibold text-slate-700">GitHub</span>
                 <input
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
+                  className="admin-input"
                   value={data.github}
                   onChange={(event) => setData({ ...data, github: event.target.value })}
                 />
@@ -115,7 +115,7 @@ export default function AdminProfilePage() {
               <label className="space-y-2">
                 <span className="text-sm font-semibold text-slate-700">LinkedIn</span>
                 <input
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:bg-white"
+                  className="admin-input"
                   value={data.linkedin}
                   onChange={(event) => setData({ ...data, linkedin: event.target.value })}
                 />

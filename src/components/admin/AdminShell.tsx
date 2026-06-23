@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  FaBars,
   FaBriefcase,
   FaFolderOpen,
   FaGraduationCap,
@@ -44,23 +43,20 @@ export function AdminShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f3f5f8] text-slate-900">
+    <div className="admin-workbench min-h-screen">
       <AdminToaster />
-      <div className="mx-auto flex min-h-screen flex-col lg:flex-row">
-        <aside className="border-b border-slate-200 bg-white px-5 py-4 lg:min-h-screen lg:w-[248px] lg:border-b-0 lg:border-r lg:px-5 lg:py-6">
-          <div className="flex items-center justify-between lg:block">
+      <div className="flex min-h-screen flex-col lg:flex-row">
+        <aside className="admin-rail border-b px-4 py-4 lg:sticky lg:top-0 lg:h-screen lg:w-[232px] lg:border-b-0 lg:border-r lg:px-4 lg:py-6">
+          <div>
             <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                Backoffice
+              <div className="admin-kicker">
+                Portfolio system
               </div>
-              <h1 className="mt-2 text-xl font-outfit font-semibold text-slate-900">Portfolio Admin</h1>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-500 lg:hidden">
-              <FaBars size={16} />
+              <h1 className="mt-2 text-xl font-display font-bold">Tana.CV</h1>
             </div>
           </div>
 
-          <nav className="mt-5 grid gap-1.5 lg:mt-8">
+          <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:mt-10 lg:grid lg:gap-1 lg:overflow-visible">
             {NAV_ITEMS.map((item) => {
               const active = pathname.startsWith(item.href);
 
@@ -68,13 +64,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                  className={`admin-nav-link group flex shrink-0 items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-[background-color,color] ${
                     active
-                      ? 'bg-slate-900 text-white'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      ? 'is-active'
+                      : ''
                   }`}
                 >
-                  <span className={active ? 'text-white' : 'text-slate-400'}>{item.icon}</span>
+                  <span>{item.icon}</span>
                   <span>{item.label}</span>
                 </Link>
               );
@@ -82,21 +78,18 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </nav>
         </aside>
 
-        <div className="flex-1">
-          <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/92 px-5 py-3 backdrop-blur lg:px-8">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <header className="admin-topbar sticky top-0 z-30 border-b px-5 py-3 lg:px-8">
+            <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4">
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Backoffice</div>
-                <div className="mt-1 text-xl font-outfit font-semibold text-slate-900">{pageLabel}</div>
+                <div className="admin-kicker">Content</div>
+                <div className="mt-0.5 text-lg font-display font-bold">{pageLabel}</div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="hidden rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-500 sm:block">
-                  Content workspace
-                </div>
+              <div className="flex items-center">
                 <button
                   onClick={handleLogout}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                  className="admin-secondary-button"
                 >
                   <FaSignOutAlt size={14} />
                   Logout
@@ -105,7 +98,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </div>
           </header>
 
-          <main className="px-5 py-5 lg:px-8 lg:py-6">{children}</main>
+          <main className="mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-5 lg:px-8 lg:py-7">{children}</main>
         </div>
       </div>
     </div>
