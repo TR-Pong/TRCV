@@ -1,4 +1,4 @@
-export const LANGUAGE_COOKIE_KEY = 'lang';
+﻿export const LANGUAGE_COOKIE_KEY = 'lang';
 
 export const publicResources = {
   en: {
@@ -63,6 +63,10 @@ export const publicResources = {
         featuredLabel: 'Featured Project',
         secondaryLabel: 'More Selected Work',
         visit: 'Visit Project',
+        downloadIos: 'Download for iOS',
+        downloadAndroid: 'Download for Android',
+        downloadWindows: 'Download for Windows',
+        downloadMac: 'Download for Mac',
       },
       experience: {
         eyebrow: 'Experience',
@@ -159,6 +163,10 @@ export const publicResources = {
         featuredLabel: 'ผลงานที่อยากนำเสนอ',
         secondaryLabel: 'ผลงานคัดเลือกเพิ่มเติม',
         visit: 'เข้าชมผลงาน',
+        downloadIos: 'ดาวน์โหลด iOS',
+        downloadAndroid: 'ดาวน์โหลด Android',
+        downloadWindows: 'ดาวน์โหลด Windows',
+        downloadMac: 'ดาวน์โหลด Mac',
       },
       experience: {
         eyebrow: 'ประสบการณ์',
@@ -203,3 +211,4 @@ export const defaultPublicLocale: PublicLocale = 'en';
 export function isPublicLocale(value: string | undefined): value is PublicLocale {
   return value === 'en' || value === 'th';
 }
+

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+﻿import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { FaAndroid, FaApple, FaExternalLinkAlt, FaGithub, FaWindows } from 'react-icons/fa';
 import { IProjectResolved } from '@/models/CVData';
@@ -59,22 +59,22 @@ function getProjectLinks(project: IProjectResolved, t: (key: string) => string):
     },
     {
       href: project.iosLink,
-      label: 'iOS',
+      label: t('public.projects.downloadIos'),
       icon: <FaApple size={16} aria-hidden="true" focusable="false" />,
     },
     {
       href: project.androidLink,
-      label: 'Android',
+      label: t('public.projects.downloadAndroid'),
       icon: <FaAndroid size={16} aria-hidden="true" focusable="false" />,
     },
     {
       href: project.windowsLink,
-      label: 'Windows',
+      label: t('public.projects.downloadWindows'),
       icon: <FaWindows size={16} aria-hidden="true" focusable="false" />,
     },
     {
       href: project.macLink,
-      label: 'Mac',
+      label: t('public.projects.downloadMac'),
       icon: <FaApple size={16} aria-hidden="true" focusable="false" />,
     },
   ];
@@ -209,4 +209,5 @@ export default function Projects({ projects, lang }: ProjectsProps) {
     </section>
   );
 }
+
 
