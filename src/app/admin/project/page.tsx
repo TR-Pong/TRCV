@@ -36,6 +36,23 @@ const secondaryButtonClassName =
 const dangerButtonClassName =
   'admin-danger-button';
 
+function normalizeProjectItem(item: ProjectFormData): ProjectFormData {
+  return {
+    ...item,
+    link: item.link ?? '',
+    github: item.github ?? '',
+    iosLink: item.iosLink ?? '',
+    androidLink: item.androidLink ?? '',
+    windowsLink: item.windowsLink ?? '',
+    macLink: item.macLink ?? '',
+    imageUrl: item.imageUrl ?? '',
+    techStack: Array.isArray(item.techStack) ? item.techStack : [],
+  };
+}
+
+function normalizeProjectItems(items: ProjectFormData[]): ProjectFormData[] {
+  return normalizeOrderedItems(items.map(normalizeProjectItem));
+}
 export default function AdminProjectPage() {
   const [items, setItems] = useState<ProjectFormData[]>([]);
   const [editingItem, setEditingItem] = useState<ProjectFormData | null>(null);
@@ -47,7 +64,7 @@ export default function AdminProjectPage() {
     setLoading(true);
     try {
       const nextItems = await fetchSectionData('project');
-      setItems(normalizeOrderedItems(Array.isArray(nextItems) ? nextItems : []));
+      setItems(normalizeProjectItems(Array.isArray(nextItems) ? nextItems : []));
     } catch {
       notifyError('Could not load projects');
     } finally {
@@ -64,7 +81,7 @@ export default function AdminProjectPage() {
   };
 
   const startEdit = (item: ProjectFormData) => {
-    setEditingItem(structuredClone(item));
+    setEditingItem(structuredClone(normalizeProjectItem(item)));
   };
 
   const closeModal = () => {
@@ -315,23 +332,67 @@ export default function AdminProjectPage() {
                 placeholder="Next.js"
               />
 
-              <label className="block space-y-2">
-                <span className="text-sm font-semibold text-slate-700">Project Link</span>
-                <input
-                  className="admin-input"
-                  value={editingItem.link}
-                  onChange={(event) => setEditingItem({ ...editingItem, link: event.target.value })}
-                />
-              </label>
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="block space-y-2">
+                  <span className="text-sm font-semibold text-slate-700">Project / Web Link</span>
+                  <input
+                    className="admin-input"
+                    value={editingItem.link}
+                    placeholder="https://example.com"
+                    onChange={(event) => setEditingItem({ ...editingItem, link: event.target.value })}
+                  />
+                </label>
 
-              <label className="block space-y-2">
-                <span className="text-sm font-semibold text-slate-700">GitHub</span>
-                <input
-                  className="admin-input"
-                  value={editingItem.github}
-                  onChange={(event) => setEditingItem({ ...editingItem, github: event.target.value })}
-                />
-              </label>
+                <label className="block space-y-2">
+                  <span className="text-sm font-semibold text-slate-700">GitHub</span>
+                  <input
+                    className="admin-input"
+                    value={editingItem.github}
+                    placeholder="https://github.com/..."
+                    onChange={(event) => setEditingItem({ ...editingItem, github: event.target.value })}
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-sm font-semibold text-slate-700">iOS Download</span>
+                  <input
+                    className="admin-input"
+                    value={editingItem.iosLink}
+                    placeholder="https://apps.apple.com/..."
+                    onChange={(event) => setEditingItem({ ...editingItem, iosLink: event.target.value })}
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-sm font-semibold text-slate-700">Android Download</span>
+                  <input
+                    className="admin-input"
+                    value={editingItem.androidLink}
+                    placeholder="https://play.google.com/..."
+                    onChange={(event) => setEditingItem({ ...editingItem, androidLink: event.target.value })}
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-sm font-semibold text-slate-700">Windows Download</span>
+                  <input
+                    className="admin-input"
+                    value={editingItem.windowsLink}
+                    placeholder="https://.../windows"
+                    onChange={(event) => setEditingItem({ ...editingItem, windowsLink: event.target.value })}
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-sm font-semibold text-slate-700">Mac Download</span>
+                  <input
+                    className="admin-input"
+                    value={editingItem.macLink}
+                    placeholder="https://.../mac"
+                    onChange={(event) => setEditingItem({ ...editingItem, macLink: event.target.value })}
+                  />
+                </label>
+              </div>
             </FormCard>
 
             <div className="admin-modal-actions flex justify-end">
@@ -346,3 +407,6 @@ export default function AdminProjectPage() {
     </div>
   );
 }
+
+
+

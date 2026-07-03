@@ -1,5 +1,6 @@
+import type { ReactNode } from 'react';
 import Image from 'next/image';
-import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
+import { FaAndroid, FaApple, FaExternalLinkAlt, FaGithub, FaWindows } from 'react-icons/fa';
 import { IProjectResolved } from '@/models/CVData';
 import SectionHeading from '@/components/SectionHeading';
 import { getPublicTranslation } from '@/lib/i18n/public-server';
@@ -9,43 +10,74 @@ interface ProjectsProps {
   lang: 'en' | 'th';
 }
 
-function ProjectLinks({
-  github,
-  link,
-  visitLabel,
-  githubLabel,
-}: {
-  github: string;
-  link: string;
-  visitLabel: string;
-  githubLabel: string;
-}) {
+type ProjectLink = {
+  href?: string;
+  label: string;
+  icon: ReactNode;
+};
+
+function isUsableLink(value?: string) {
+  return Boolean(value && value !== '#');
+}
+
+function ProjectLinks({ links }: { links: ProjectLink[] }) {
+  const visibleLinks = links.filter((link) => isUsableLink(link.href));
+
+  if (!visibleLinks.length) {
+    return null;
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-3 border-t border-border/80 pt-6 sm:gap-5">
-      {github && github !== '#' ? (
+      {visibleLinks.map((link) => (
         <a
-          href={github}
+          key={`${link.label}-${link.href}`}
+          href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="focus-ring inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-foreground/72 transition hover:text-foreground"
+          className="focus-ring inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-foreground/72 transition-colors hover:text-foreground"
         >
-          <FaGithub size={16} aria-hidden="true" focusable="false" />
-          <span>{githubLabel}</span>
+          {link.icon}
+          <span>{link.label}</span>
         </a>
-      ) : null}
-      {link && link !== '#' ? (
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="focus-ring inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-foreground/72 transition hover:text-foreground"
-        >
-          <FaExternalLinkAlt size={14} aria-hidden="true" focusable="false" />
-          <span>{visitLabel}</span>
-        </a>
-      ) : null}
+      ))}
     </div>
   );
+}
+
+function getProjectLinks(project: IProjectResolved, t: (key: string) => string): ProjectLink[] {
+  return [
+    {
+      href: project.github,
+      label: t('common.github'),
+      icon: <FaGithub size={16} aria-hidden="true" focusable="false" />,
+    },
+    {
+      href: project.link,
+      label: t('public.projects.visit'),
+      icon: <FaExternalLinkAlt size={14} aria-hidden="true" focusable="false" />,
+    },
+    {
+      href: project.iosLink,
+      label: 'iOS',
+      icon: <FaApple size={16} aria-hidden="true" focusable="false" />,
+    },
+    {
+      href: project.androidLink,
+      label: 'Android',
+      icon: <FaAndroid size={16} aria-hidden="true" focusable="false" />,
+    },
+    {
+      href: project.windowsLink,
+      label: 'Windows',
+      icon: <FaWindows size={16} aria-hidden="true" focusable="false" />,
+    },
+    {
+      href: project.macLink,
+      label: 'Mac',
+      icon: <FaApple size={16} aria-hidden="true" focusable="false" />,
+    },
+  ];
 }
 
 export default function Projects({ projects, lang }: ProjectsProps) {
@@ -112,12 +144,7 @@ export default function Projects({ projects, lang }: ProjectsProps) {
                 </div>
 
                 <div className="public-dark-links mt-8">
-                  <ProjectLinks
-                    github={featuredProject.github}
-                    link={featuredProject.link}
-                    visitLabel={t('public.projects.visit')}
-                    githubLabel={t('common.github')}
-                  />
+                  <ProjectLinks links={getProjectLinks(featuredProject, t)} />
                 </div>
               </div>
             </div>
@@ -168,16 +195,11 @@ export default function Projects({ projects, lang }: ProjectsProps) {
                         </span>
                       ))}
                     </div>
-
                   </div>
-                    <div className="public-dark-links md:col-start-2 lg:col-start-auto lg:justify-self-end">
-                      <ProjectLinks
-                        github={project.github}
-                        link={project.link}
-                        visitLabel={t('public.projects.visit')}
-                        githubLabel={t('common.github')}
-                      />
-                    </div>
+
+                  <div className="public-dark-links md:col-start-2 lg:col-start-auto lg:justify-self-end">
+                    <ProjectLinks links={getProjectLinks(project, t)} />
+                  </div>
                 </article>
               ))}
             </div>
@@ -187,3 +209,4 @@ export default function Projects({ projects, lang }: ProjectsProps) {
     </section>
   );
 }
+

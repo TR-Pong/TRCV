@@ -47,6 +47,10 @@ export interface ProjectFormData {
   techStack: string[];
   link: string;
   github: string;
+  iosLink: string;
+  androidLink: string;
+  windowsLink: string;
+  macLink: string;
   imageUrl: string;
   order: number;
   enabled: boolean;
@@ -68,3 +72,5 @@ export type CollectionItemMap = {
   skill: SkillFormData;
   project: ProjectFormData;
 };
+
+

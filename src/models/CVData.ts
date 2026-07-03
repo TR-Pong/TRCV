@@ -101,6 +101,10 @@ export interface IProjectData {
   techStack: string[];
   link: string;
   github: string;
+  iosLink: string;
+  androidLink: string;
+  windowsLink: string;
+  macLink: string;
   imageUrl: string;
   order: number;
   enabled: boolean;
@@ -114,6 +118,10 @@ const ProjectSchema = new Schema<IProject>({
   techStack: { type: [String], required: true },
   link: { type: String, required: false },
   github: { type: String, required: false },
+  iosLink: { type: String, required: false, default: '' },
+  androidLink: { type: String, required: false, default: '' },
+  windowsLink: { type: String, required: false, default: '' },
+  macLink: { type: String, required: false, default: '' },
   imageUrl: { type: String, required: false, default: '' },
   order: { type: Number, required: false, default: 0 },
   enabled: { type: Boolean, required: false, default: true },
@@ -168,7 +176,13 @@ export interface IProjectResolved {
   techStack: string[];
   link: string;
   github: string;
+  iosLink: string;
+  androidLink: string;
+  windowsLink: string;
+  macLink: string;
   imageUrl: string;
   order: number;
   enabled: boolean;
 }
+
+

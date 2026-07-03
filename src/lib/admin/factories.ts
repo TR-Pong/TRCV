@@ -58,8 +58,14 @@ export function createProjectItem(): ProjectFormData {
     techStack: [],
     link: '',
     github: '',
+    iosLink: '',
+    androidLink: '',
+    windowsLink: '',
+    macLink: '',
     imageUrl: '',
     order: 0,
     enabled: true,
   };
 }
+
+

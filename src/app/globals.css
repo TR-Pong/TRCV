@@ -185,11 +185,141 @@
     box-shadow: 0 0 0 3px var(--color-focus);
     outline: none;
   }
+
+  .not-found-panel {
+    box-shadow: var(--shadow-paper-panel);
+  }
+
+  .not-found-illustration {
+    color: var(--color-ink);
+  }
+
+  .not-found-illustration .nf-ground,
+  .not-found-illustration .nf-wire,
+  .not-found-illustration .nf-mouth-wire {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .not-found-illustration .nf-ground {
+    stroke-width: 4;
+    opacity: 0.18;
+  }
+
+  .not-found-illustration .nf-wire {
+    stroke-width: 7;
+    stroke-dasharray: 780;
+    stroke-dashoffset: 780;
+    animation: nf-wire-draw 1800ms var(--ease-out) 180ms forwards;
+  }
+
+  .not-found-illustration .nf-mouth-wire {
+    stroke-width: 8;
+    animation: nf-shock 1400ms var(--ease-in-out) infinite;
+  }
+
+  .not-found-illustration .nf-limb {
+    fill: none;
+    stroke: var(--color-cave-skin);
+    stroke-linecap: round;
+    stroke-width: 22;
+  }
+
+  .not-found-illustration .nf-hand {
+    fill: none;
+    stroke: var(--color-cave-skin);
+    stroke-linecap: round;
+    stroke-width: 16;
+  }
+
+  .not-found-illustration .nf-bush {
+    fill: var(--color-admin-success);
+    opacity: 0.8;
+  }
+
+  .not-found-illustration .nf-character {
+    transform-origin: 360px 320px;
+    animation: nf-character-jolt 1400ms var(--ease-in-out) infinite;
+  }
+
+  .not-found-illustration .nf-sparks {
+    opacity: 0;
+    animation: nf-sparks 1400ms steps(2, jump-none) infinite;
+  }
 }
 
 @media (min-width: 48rem) {
   .public-hero {
     padding-top: calc(7rem + env(safe-area-inset-top));
+  }
+}
+
+@keyframes nf-wire-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes nf-character-jolt {
+  0%,
+  42%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  48% {
+    transform: translate3d(-3px, -3px, 0) rotate(-1.5deg);
+  }
+
+  54% {
+    transform: translate3d(4px, 2px, 0) rotate(1.5deg);
+  }
+
+  60% {
+    transform: translate3d(-2px, 1px, 0) rotate(-0.8deg);
+  }
+}
+
+@keyframes nf-sparks {
+  0%,
+  38%,
+  100% {
+    opacity: 0;
+  }
+
+  44%,
+  66% {
+    opacity: 1;
+  }
+}
+
+@keyframes nf-shock {
+  0%,
+  42%,
+  100% {
+    stroke: var(--color-ink);
+    filter: none;
+  }
+
+  48%,
+  62% {
+    stroke: var(--color-signal);
+    filter: drop-shadow(0 0 8px var(--color-signal));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .not-found-illustration .nf-wire,
+  .not-found-illustration .nf-mouth-wire,
+  .not-found-illustration .nf-character,
+  .not-found-illustration .nf-sparks {
+    animation: none;
+  }
+
+  .not-found-illustration .nf-wire {
+    stroke-dashoffset: 0;
   }
 }
 
